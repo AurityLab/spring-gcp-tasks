@@ -16,10 +16,10 @@ import kotlin.reflect.full.findAnnotation
  * Abstract class for task worker implementations.
  */
 @Component
-abstract class ITaskWorker<T : Any> {
+abstract class ITaskWorker<T : Any>(private val payloadClass: Class<T>) {
     companion object {
-        fun <T : Any> runFor(worker: ITaskWorker<T>, payload: T, id: UUID) {
-            worker.run(payload, id)
+        fun runFor(worker: ITaskWorker<*>, payload: String, id: UUID) {
+            worker.runWorker(payload, id)
         }
 
         private val mapper = jacksonObjectMapper()
@@ -40,6 +40,25 @@ abstract class ITaskWorker<T : Any> {
         } catch (e: NullPointerException) {
             throw TaskNoQueueNameException("Queue name is not specified by annotation or overridden!", e)
         }
+    }
+
+    /**
+     * Parses the given [payload] and runs this worker.
+     *
+     * @param payload The payload to use, as a string
+     * @param id The id of the task
+     * @throws Exception If something went wrong and a retry is allowed
+     * @throws TaskNoRetryException If something went wrong and retry is NOT allowed
+     */
+    private fun runWorker(payload: String, id: UUID) {
+        val javaType = mapper.typeFactory.constructParametricType(
+                PayloadWrapper::class.java,
+                payloadClass::class.java
+        )
+        val wrapper: PayloadWrapper<T> = mapper.readValue(payload, javaType)
+
+        // Run worker
+        run(wrapper.payload, id)
     }
 
     /**
