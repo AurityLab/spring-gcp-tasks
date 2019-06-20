@@ -8,11 +8,13 @@ import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameExcepti
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueueFactory
+import com.auritylab.spring.gcp.tasks.configurations.SpringGcpTasksConfigurationProperties
 import com.auritylab.spring.gcp.tasks.core.executor.TaskExecutor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
 
 /**
  * Abstract class for task worker implementations.
@@ -31,7 +33,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     private lateinit var taskExecutor: TaskExecutor
 
     @Autowired
-    private lateinit var taskQueueFactory: TaskQueueFactory
+    private lateinit var properties: SpringGcpTasksConfigurationProperties
 
     /**
      * Overrides queue name of [CloudTask] annotation.
@@ -39,7 +41,30 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * @return The name of the Cloud Task queue to use
      * @throws TaskInvalidQueueNameException If no queue name is specified
      */
-    abstract fun getQueue(): TaskQueue
+    fun getQueue(): TaskQueue = getQueueFactory().of()
+
+    /**
+     * Will return the [TaskQueueFactory] instance of this worker.
+     *
+     * @return The [TaskQueueFactory] instance of this worker
+     */
+    protected fun getQueueFactory(): TaskQueueFactory {
+        val annotation = this::class.findAnnotation<CloudTask>()
+
+        var projectId = annotation?.projectId
+        var locationId = annotation?.projectId
+        var queueId = annotation?.projectId
+
+        if (projectId   != null && projectId    == "$") projectId = null
+        if (locationId  != null && locationId   == "$") locationId = null
+        if (queueId     != null && queueId      == "$") queueId = null
+
+        return TaskQueueFactory(
+                projectId ?: properties.defaultProjectId,
+                locationId ?: properties.defaultLocationId,
+                queueId ?: properties.defaultQueueId
+        )
+    }
 
     /**
      * This method gets called when the worker receives a new
@@ -68,32 +93,6 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     protected abstract fun run(payload: T, id: UUID)
 
     /**
-     * Use this method to add a task with given [payload] to
-     * the queue. Returns uuid of the task.
-     *
-     * @param payload The payload to use for the task
-     * @return The uuid of the task
-     * @throws TaskFailedToSubmitException If something went wrong while adding task to queue
-     */
-    fun execute(payload: T): UUID {
-        try {
-            val wrapper = PayloadWrapper(payload)
-            val json = mapper.writeValueAsString(wrapper)
-
-            return taskExecutor.execute(getQueue().toString(), json)
-        } catch (e: Exception) {
-            throw TaskFailedToSubmitException("Failed to submit task to GCP Cloud Tasks!", e)
-        }
-    }
-
-    /**
-     * Will return the [TaskQueueFactory] instance of this worker.
-     *
-     * @return The [TaskQueueFactory] instance of this worker
-     */
-    protected fun getQueueFactory(): TaskQueueFactory = taskQueueFactory
-
-    /**
      * Parses the given [payload] and runs this worker.
      *
      * @param payload The payload to use, as a string
@@ -110,5 +109,24 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
         // Run worker
         run(wrapper.payload, id)
+    }
+
+    /**
+     * Use this method to add a task with given [payload] to
+     * the queue. Returns uuid of the task.
+     *
+     * @param payload The payload to use for the task
+     * @return The uuid of the task
+     * @throws TaskFailedToSubmitException If something went wrong while adding task to queue
+     */
+    fun execute(payload: T): UUID {
+        try {
+            val wrapper = PayloadWrapper(payload)
+            val json = mapper.writeValueAsString(wrapper)
+
+            return taskExecutor.execute(getQueue().toString(), json)
+        } catch (e: Exception) {
+            throw TaskFailedToSubmitException("Failed to submit task to GCP Cloud Tasks!", e)
+        }
     }
 }

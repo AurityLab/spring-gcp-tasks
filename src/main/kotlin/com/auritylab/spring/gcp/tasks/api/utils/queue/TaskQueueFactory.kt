@@ -1,18 +1,20 @@
 package com.auritylab.spring.gcp.tasks.api.utils.queue
 
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameException
-import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
-import com.auritylab.spring.gcp.tasks.configurations.SpringGcpTasksConfigurationProperties
-import org.springframework.stereotype.Component
+import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 
-@Component
 class TaskQueueFactory(
-        private val properties: SpringGcpTasksConfigurationProperties
+        private val defaultProjectId: String?,
+        private val defaultLocationId: String?,
+        private val defaultQueueId: String?
 ) {
     /**
      * Creates a [TaskQueue] object based on default properties.
      *
      * If at least one default is null, an exception will be thrown.
+     *
+     * Default properties (used in order if one is null):
+     * "[CloudTask] properties", "spring configuration properties"
      *
      * @return The constructed [TaskQueue] object
      * @throws TaskInvalidQueueNameException If not all properties are given as default
@@ -22,7 +24,7 @@ class TaskQueueFactory(
     /**
      * Creates a [TaskQueue] object based on given properties.
      *
-     * If a property is null, the spring configured default is used.
+     * If a property is null, the default is used.
      * If that is also null, an exception will be thrown.
      *
      * @param queueId The queue id of the queue, or null for default
@@ -34,7 +36,7 @@ class TaskQueueFactory(
     /**
      * Creates a [TaskQueue] object based on given properties.
      *
-     * If a property is null, the spring configured default is used.
+     * If a property is null, the default is used.
      * If that is also null, an exception will be thrown.
      *
      * @param locationId The location id of the queue, or null for default
@@ -58,11 +60,9 @@ class TaskQueueFactory(
      */
     fun of(projectId: String?, locationId: String?, queueId: String?): TaskQueue {
         return TaskQueue(
-                projectId ?: properties.defaultProjectId
-                ?: throw TaskInvalidQueueNameException("No project id is given!"),
-                locationId ?: properties.defaultLocationId
-                ?: throw TaskInvalidQueueNameException("No location id is given!"),
-                queueId ?: properties.defaultLocationId ?: throw TaskInvalidQueueNameException("No queue id is given!")
+                projectId ?: defaultProjectId ?: throw TaskInvalidQueueNameException("No project id is given!"),
+                locationId ?: defaultLocationId ?: throw TaskInvalidQueueNameException("No location id is given!"),
+                queueId ?: defaultQueueId ?: throw TaskInvalidQueueNameException("No queue id is given!")
         )
     }
 }
