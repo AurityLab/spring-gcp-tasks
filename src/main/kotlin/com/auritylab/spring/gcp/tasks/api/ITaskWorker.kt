@@ -4,19 +4,43 @@ import java.util.*
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskFailedToSubmitException
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
+import com.auritylab.spring.gcp.tasks.api.exceptions.TaskNoQueueNameException
+import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
+import com.auritylab.spring.gcp.tasks.executor.TaskExecutor
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import kotlin.reflect.full.findAnnotation
 
 /**
- * Interface for task worker implementations.
+ * Abstract class for task worker implementations.
  */
-interface ITaskWorker<T : Any> {
+@Component
+abstract class ITaskWorker<T : Any> {
+    companion object {
+        fun <T : Any> runFor(worker: ITaskWorker<T>, payload: T, id: UUID) {
+            worker.run(payload, id)
+        }
+
+        private val mapper = jacksonObjectMapper()
+    }
+
+    @Autowired
+    private lateinit var taskExecutor: TaskExecutor
+
     /**
      * Overrides queue name of [CloudTask] annotation.
      *
-     * If value is null, [CloudTask] annotation value will be used.
-     *
      * @return The name of the Cloud Task queue to use
+     * @throws TaskNoQueueNameException If no queue name is specified
      */
-    fun getQueueName(): String? = null
+    fun getQueueName(): String {
+        try {
+            return this::class.findAnnotation<CloudTask>()!!.queue
+        } catch (e: NullPointerException) {
+            throw TaskNoQueueNameException("Queue name is not specified by annotation or overridden!", e)
+        }
+    }
 
     /**
      * This method gets called when the worker receives a new
@@ -42,7 +66,7 @@ interface ITaskWorker<T : Any> {
      * @throws Exception If something went wrong and a retry is allowed
      * @throws TaskNoRetryException If something went wrong and retry is NOT allowed
      */
-    fun run(payload: T, id: UUID)
+    protected abstract fun run(payload: T, id: UUID)
 
     /**
      * Use this method to add a task with given [payload] to
@@ -50,7 +74,16 @@ interface ITaskWorker<T : Any> {
      *
      * @param payload The payload to use for the task
      * @return The uuid of the task
-     * @throws TaskFailedToSubmitException If something went wrong wil adding task to queue
+     * @throws TaskFailedToSubmitException If something went wrong while adding task to queue
      */
-    fun execute(payload: T): UUID {}
+    fun execute(payload: T): UUID {
+        try {
+            val wrapper = PayloadWrapper(payload)
+            val json = mapper.writeValueAsString(wrapper)
+
+            return taskExecutor.execute(getQueueName(), json)
+        } catch (e: Exception) {
+            throw TaskFailedToSubmitException("Failed to submit task to GCP Cloud Tasks!", e)
+        }
+    }
 }
