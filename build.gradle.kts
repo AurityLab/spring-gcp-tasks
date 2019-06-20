@@ -28,7 +28,6 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-gcp-starter")
 
 	// gcp standalone
-	implementation("com.google.cloud:google-cloud-tasks:1.5.0")
 }
 
 dependencyManagement {
