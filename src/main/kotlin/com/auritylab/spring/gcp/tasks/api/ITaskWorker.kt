@@ -12,6 +12,7 @@ import com.auritylab.spring.gcp.tasks.configurations.SpringGcpTasksConfiguration
 import com.auritylab.spring.gcp.tasks.core.executor.TaskExecutor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -34,6 +35,9 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
     @Autowired
     private lateinit var properties: SpringGcpTasksConfigurationProperties
+
+    @Autowired
+    private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
 
     /**
      * Overrides queue name of [CloudTask] annotation.
@@ -60,7 +64,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         if (queueId     != null && queueId      == "$") queueId = null
 
         return TaskQueueFactory(
-                projectId ?: properties.defaultProjectId,
+                projectId ?: gcpProjectIdProvider.projectId ?: properties.defaultProjectId,
                 locationId ?: properties.defaultLocationId,
                 queueId ?: properties.defaultQueueId
         )
