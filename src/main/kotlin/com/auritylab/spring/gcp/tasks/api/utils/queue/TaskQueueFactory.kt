@@ -29,7 +29,7 @@ class TaskQueueFactory(
      * @return The constructed [TaskQueue] object
      * @throws TaskInvalidQueueNameException If one or more properties are null and no default is given
      */
-    fun of(queueId: String? = null): TaskQueue = of(null, null, queueId)
+    fun of(queueId: String?): TaskQueue = of(null, null, queueId)
 
     /**
      * Creates a [TaskQueue] object based on given properties.
@@ -42,7 +42,7 @@ class TaskQueueFactory(
      * @return The constructed [TaskQueue] object
      * @throws TaskInvalidQueueNameException If one or more properties are null and no default is given
      */
-    fun of(locationId: String? = null, queueId: String? = null): TaskQueue = of(null, locationId, queueId)
+    fun of(locationId: String?, queueId: String?): TaskQueue = of(null, locationId, queueId)
 
     /**
      * Creates a [TaskQueue] object based on given properties.
@@ -56,7 +56,7 @@ class TaskQueueFactory(
      * @return The constructed [TaskQueue] object
      * @throws TaskInvalidQueueNameException If one or more properties are null and no default is given
      */
-    fun of(projectId: String? = null, locationId: String? = null, queueId: String? = null): TaskQueue {
+    fun of(projectId: String?, locationId: String?, queueId: String?): TaskQueue {
         return TaskQueue(
                 projectId ?: properties.defaultProjectId
                 ?: throw TaskInvalidQueueNameException("No project id is given!"),
