@@ -52,8 +52,8 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         val annotation = this::class.findAnnotation<CloudTask>()
 
         var projectId = annotation?.projectId
-        var locationId = annotation?.projectId
-        var queueId = annotation?.projectId
+        var locationId = annotation?.locationId
+        var queueId = annotation?.queueId
 
         if (projectId   != null && projectId    == "$") projectId = null
         if (locationId  != null && locationId   == "$") locationId = null
