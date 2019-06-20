@@ -1,4 +1,4 @@
-package com.auritylab.spring.gcp.tasks.executor
+package com.auritylab.spring.gcp.tasks.core.executor
 
 import org.springframework.stereotype.Component
 import java.util.*

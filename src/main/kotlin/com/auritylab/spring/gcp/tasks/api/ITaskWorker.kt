@@ -4,14 +4,15 @@ import java.util.*
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskFailedToSubmitException
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
-import com.auritylab.spring.gcp.tasks.api.exceptions.TaskNoQueueNameException
+import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
-import com.auritylab.spring.gcp.tasks.executor.TaskExecutor
+import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
+import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueueFactory
+import com.auritylab.spring.gcp.tasks.core.executor.TaskExecutor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 
 /**
  * Abstract class for task worker implementations.
@@ -19,7 +20,7 @@ import kotlin.reflect.full.findAnnotation
 @Component
 abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     companion object {
-        fun runFor(worker: ITaskWorker<*>, payload: String, id: UUID) {
+        internal fun runFor(worker: ITaskWorker<*>, payload: String, id: UUID) {
             worker.runWorker(payload, id)
         }
 
@@ -29,38 +30,16 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @Autowired
     private lateinit var taskExecutor: TaskExecutor
 
+    @Autowired
+    private lateinit var taskQueueFactory: TaskQueueFactory
+
     /**
      * Overrides queue name of [CloudTask] annotation.
      *
      * @return The name of the Cloud Task queue to use
-     * @throws TaskNoQueueNameException If no queue name is specified
+     * @throws TaskInvalidQueueNameException If no queue name is specified
      */
-    fun getQueueName(): String {
-        try {
-            return this::class.findAnnotation<CloudTask>()!!.queue
-        } catch (e: NullPointerException) {
-            throw TaskNoQueueNameException("Queue name is not specified by annotation or overridden!", e)
-        }
-    }
-
-    /**
-     * Parses the given [payload] and runs this worker.
-     *
-     * @param payload The payload to use, as a string
-     * @param id The id of the task
-     * @throws Exception If something went wrong and a retry is allowed
-     * @throws TaskNoRetryException If something went wrong and retry is NOT allowed
-     */
-    private fun runWorker(payload: String, id: UUID) {
-        val javaType = mapper.typeFactory.constructParametricType(
-                PayloadWrapper::class.java,
-                payloadClass::class.java
-        )
-        val wrapper: PayloadWrapper<T> = mapper.readValue(payload, javaType)
-
-        // Run worker
-        run(wrapper.payload, id)
-    }
+    abstract fun getQueue(): TaskQueue
 
     /**
      * This method gets called when the worker receives a new
@@ -101,9 +80,35 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
             val wrapper = PayloadWrapper(payload)
             val json = mapper.writeValueAsString(wrapper)
 
-            return taskExecutor.execute(getQueueName(), json)
+            return taskExecutor.execute(getQueue().toString(), json)
         } catch (e: Exception) {
             throw TaskFailedToSubmitException("Failed to submit task to GCP Cloud Tasks!", e)
         }
+    }
+
+    /**
+     * Will return the [TaskQueueFactory] instance of this worker.
+     *
+     * @return The [TaskQueueFactory] instance of this worker
+     */
+    protected fun getQueueFactory(): TaskQueueFactory = taskQueueFactory
+
+    /**
+     * Parses the given [payload] and runs this worker.
+     *
+     * @param payload The payload to use, as a string
+     * @param id The id of the task
+     * @throws Exception If something went wrong and a retry is allowed
+     * @throws TaskNoRetryException If something went wrong and retry is NOT allowed
+     */
+    private fun runWorker(payload: String, id: UUID) {
+        val javaType = mapper.typeFactory.constructParametricType(
+                PayloadWrapper::class.java,
+                payloadClass::class.java
+        )
+        val wrapper: PayloadWrapper<T> = mapper.readValue(payload, javaType)
+
+        // Run worker
+        run(wrapper.payload, id)
     }
 }

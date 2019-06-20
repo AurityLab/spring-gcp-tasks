@@ -5,4 +5,4 @@ import org.springframework.stereotype.Service
 @Service
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class CloudTask(val queue: String)
+annotation class CloudTask
