@@ -68,7 +68,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      *
      * The implementation should throw an exception, if something
      * went wrong. The task will then be put into the queue again
-     * to retry later. The task itself specifies the max number of
+     * to retry later. The queue specifies the max number of
      * retires.
      *
      * If the task failed in a way, so that it should NOT be retried,
