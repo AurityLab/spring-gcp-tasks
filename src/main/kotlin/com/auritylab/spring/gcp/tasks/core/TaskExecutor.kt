@@ -1,7 +1,6 @@
-package com.auritylab.spring.gcp.tasks.core.executor
+package com.auritylab.spring.gcp.tasks.core
 
 import com.auritylab.spring.gcp.tasks.api.ITaskWorker
-import com.auritylab.spring.gcp.tasks.configurations.SpringGcpTasksConfigurationProperties
 import com.auritylab.spring.gcp.tasks.remote.TaskCredentialsService
 import com.google.api.services.cloudtasks.v2beta3.model.CreateTaskRequest
 import com.google.api.services.cloudtasks.v2beta3.model.HttpRequest
