@@ -4,6 +4,7 @@ import java.util.*
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskFailedToSubmitException
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
+import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidEndpointException
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 import org.springframework.stereotype.Component
+import java.net.URL
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
@@ -40,12 +42,54 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
 
     /**
-     * Overrides queue name of [CloudTask] annotation.
+     * Will return the final queue name as a [TaskQueue] object.
      *
-     * @return The name of the Cloud Task queue to use
+     * @return The queue name as a [TaskQueue] object
      * @throws TaskInvalidQueueNameException If no queue name is specified
      */
     fun getQueue(): TaskQueue = getQueueFactory().of()
+
+    /**
+     * Will return the final worker endpoint.
+     *
+     * If a property is null, the default is used.
+     * If that is also null, an exception will be thrown.
+     *
+     * Default properties (used in order if one is null):
+     * `[CloudTask] properties`, `spring configuration properties`
+     *
+     * @return The final worker endpoint
+     * @throws TaskInvalidEndpointException If no worker endpoint is specified
+     */
+    fun getEndpoint(): URL {
+        val annotation = getCloudTaskAnnotation()
+
+        var urlStr = annotation?.customEndpoint
+        if (urlStr != null && urlStr == ":") urlStr = null
+
+        return URL(urlStr ?: properties.defaultWorkerEndpoint ?:
+            throw TaskInvalidEndpointException("No endpoint given!"))
+    }
+
+    /**
+     * Will return the final worker endpoint route.
+     *
+     * If a property is null, the default is used.
+     * If that is also null, it will be set to an empty string.
+     *
+     * Default properties (used in order if one is null):
+     * `[CloudTask] properties`, `spring configuration properties`
+     *
+     * @return The worker endpoint route
+     */
+    fun getRoute(): String {
+        val annotation = getCloudTaskAnnotation()
+
+        var routeStr = annotation?.customRoute
+        if (routeStr != null && routeStr == ":") routeStr = null
+
+        return routeStr ?: properties.defaultWorkerEndpointRoute ?: ""
+    }
 
     /**
      * Will return the [TaskQueueFactory] instance of this worker.
@@ -53,7 +97,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * @return The [TaskQueueFactory] instance of this worker
      */
     protected fun getQueueFactory(): TaskQueueFactory {
-        val annotation = this::class.findAnnotation<CloudTask>()
+        val annotation = getCloudTaskAnnotation()
 
         var projectId = annotation?.projectId
         var locationId = annotation?.locationId
@@ -128,9 +172,11 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
             val wrapper = PayloadWrapper(payload)
             val json = mapper.writeValueAsString(wrapper)
 
-            return taskExecutor.execute(getQueue().toString(), json)
+            return taskExecutor.execute(this, json)
         } catch (e: Exception) {
             throw TaskFailedToSubmitException("Failed to submit task to GCP Cloud Tasks!", e)
         }
     }
+
+    private fun getCloudTaskAnnotation(): CloudTask? = this::class.findAnnotation()
 }

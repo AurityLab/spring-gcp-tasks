@@ -8,5 +8,7 @@ import org.springframework.stereotype.Service
 annotation class CloudTask(
         val projectId: String = "$",
         val locationId: String = "$",
-        val queueId: String = "$"
+        val queueId: String = "$",
+        val customEndpoint: String = ":",
+        val customRoute: String = ":"
 )
