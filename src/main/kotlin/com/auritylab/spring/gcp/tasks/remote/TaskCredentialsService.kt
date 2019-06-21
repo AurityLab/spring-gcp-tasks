@@ -3,22 +3,26 @@ package com.auritylab.spring.gcp.tasks.remote
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.gax.core.CredentialsProvider
-import com.google.api.services.cloudtasks.v2.CloudTasks
-import com.google.api.services.cloudtasks.v2.CloudTasksRequestInitializer
+import com.google.api.services.cloudtasks.v2beta3.CloudTasks
+import com.google.auth.oauth2.GoogleCredentials
 import org.springframework.stereotype.Service
 
 @Service
-class TaskCredentialsService(
-        private val credentialsProvider: CredentialsProvider
-) {
-    private val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
-    private val jsonFactory = JacksonFactory.getDefaultInstance()
+class TaskCredentialsService {
+    private lateinit var cloudTasks: CloudTasks
 
-    private val credentials = credentialsProvider.credentials
+    init {
+        val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
+        val jsonFactory = JacksonFactory.getDefaultInstance()
 
-    val cloudTasks = CloudTasks.Builder(
-            httpTransport,
-            jsonFactory,
-            HttpRequestInitializer {})
+        var credentials = GoogleCredentials.getApplicationDefault()
+        if (credentials.createScopedRequired())
+            credentials = credentials.createScoped(arrayListOf("https://www.googleapis.com/auth/cloud-platform"))
+
+        cloudTasks = CloudTasks.Builder(httpTransport, jsonFactory, HttpRequestInitializer {
+            request -> request!!.headers.authorization = credentials.accessToken.tokenValue
+        }).build()
+    }
+
+    fun getCloudTasks(): CloudTasks = cloudTasks
 }

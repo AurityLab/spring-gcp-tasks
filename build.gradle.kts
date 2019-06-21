@@ -29,7 +29,7 @@ dependencies {
 
 	// gcp standalone
 	implementation("com.google.api-client:google-api-client:1.30.0")
-	implementation("com.google.apis:google-api-services-cloudtasks:v2-rev7-1.25.0")
+	implementation("com.google.apis:google-api-services-cloudtasks:v2beta3-rev19-1.25.0")
 }
 
 dependencyManagement {
