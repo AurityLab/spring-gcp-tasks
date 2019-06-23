@@ -4,7 +4,6 @@ import java.util.*
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskFailedToSubmitException
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
-import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidEndpointException
 import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
@@ -53,13 +52,11 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * Will return the final worker endpoint.
      *
      * If a property is null, the default is used.
-     * If that is also null, an exception will be thrown.
      *
      * Default properties (used in order if one is null):
      * `[CloudTask] properties`, `spring configuration properties`
      *
      * @return The final worker endpoint
-     * @throws TaskInvalidEndpointException If no worker endpoint is specified
      */
     fun getEndpoint(): URL {
         val annotation = getCloudTaskAnnotation()
@@ -67,8 +64,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         var urlStr = annotation?.customEndpoint
         if (urlStr != null && urlStr == ":") urlStr = null
 
-        return URL(urlStr ?: properties.workerEndpoint ?:
-            throw TaskInvalidEndpointException("No endpoint given!"))
+        return URL(urlStr ?: properties.workerEndpoint)
     }
 
     /**
