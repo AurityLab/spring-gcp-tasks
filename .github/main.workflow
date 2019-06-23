@@ -1,6 +1,6 @@
 workflow "Push" {
   on = "push"
-  resolves = ["Check", "Test"]
+  resolves = ["Test"]
 }
 
 action "Check" {
@@ -12,6 +12,7 @@ action "Check" {
 }
 
 action "Test" {
+  needs = ["Check"]
   uses = "MrRamych/gradle-actions/openjdk-12@2.1"
   args = "test"
   env = {
