@@ -10,7 +10,7 @@ import java.util.*
 
 @Component
 class TaskExecutor(
-        private val taskCredentials: TaskCredentialsService
+    private val taskCredentials: TaskCredentialsService
 ) {
     fun execute(worker: ITaskWorker<*>, payload: String): UUID {
         val uuid = UUID.randomUUID()

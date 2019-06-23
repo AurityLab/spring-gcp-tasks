@@ -99,9 +99,9 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         var locationId = annotation?.locationId
         var queueId = annotation?.queueId
 
-        if (projectId   != null && projectId    == "$") projectId = null
-        if (locationId  != null && locationId   == "$") locationId = null
-        if (queueId     != null && queueId      == "$") queueId = null
+        if (projectId   != null && projectId    == "$") projectId = null    // ktlint-disable
+        if (locationId  != null && locationId   == "$") locationId = null   // ktlint-disable
+        if (queueId     != null && queueId      == "$") queueId = null      // ktlint-disable
 
         return TaskQueueFactory(
                 projectId ?: gcpProjectIdProvider.projectId ?: properties.defaultProjectId,

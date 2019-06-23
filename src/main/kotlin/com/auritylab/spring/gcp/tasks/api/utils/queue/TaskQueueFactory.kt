@@ -5,9 +5,9 @@ import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 
 class TaskQueueFactory(
-        private val defaultProjectId: String?,
-        private val defaultLocationId: String?,
-        private val defaultQueueId: String?
+    private val defaultProjectId: String?,
+    private val defaultLocationId: String?,
+    private val defaultQueueId: String?
 ) {
     /**
      * Creates a [TaskQueue] object based on default properties.

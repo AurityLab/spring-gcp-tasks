@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class CloudTask(
-        val projectId: String = "$",
-        val locationId: String = "$",
-        val queueId: String = "$",
-        val customEndpoint: String = ":",
-        val customRoute: String = ":"
+    val projectId: String = "$",
+    val locationId: String = "$",
+    val queueId: String = "$",
+    val customEndpoint: String = ":",
+    val customRoute: String = ":"
 )
