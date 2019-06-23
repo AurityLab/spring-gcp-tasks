@@ -18,6 +18,10 @@ ext {
     set('springCloudVersion', "Greenwich.SR1")
 }
 
+configurations {
+    ktlint
+}
+
 dependencies {
     // kotlin
     implementation "org.jetbrains.kotlin:kotlin-reflect"
@@ -31,6 +35,9 @@ dependencies {
     // gcp standalone
     implementation "com.google.api-client:google-api-client:1.30.0"
     implementation "com.google.apis:google-api-services-cloudtasks:v2beta3-rev19-1.25.0"
+
+    // ktlint
+    ktlint("com.pinterest:ktlint:0.33.0")
 }
 
 dependencyManagement {
@@ -38,6 +45,17 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "src/**/*.kt"
+    // to generate report in checkstyle format prepend following args:
+    // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
+    // see https://github.com/pinterest/ktlint#usage for more
+}
+check.dependsOn ktlint
 
 compileKotlin {
     kotlinOptions.freeCompilerArgs = Collections.singletonList("-Xjsr305=strict")
