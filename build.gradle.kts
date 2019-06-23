@@ -24,7 +24,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7")
 
-	// gcp spring
+	// spring
+	implementation("org.springframework:spring-web:5.1.8.RELEASE")
 	implementation("org.springframework.cloud:spring-cloud-gcp-starter")
 
 	// gcp standalone

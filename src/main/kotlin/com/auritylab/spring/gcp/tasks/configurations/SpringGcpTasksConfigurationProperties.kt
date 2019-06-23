@@ -3,6 +3,7 @@ package com.auritylab.spring.gcp.tasks.configurations
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
+import javax.annotation.Nonnull
 import javax.annotation.Nullable
 
 @Component
@@ -18,9 +19,9 @@ class SpringGcpTasksConfigurationProperties {
     @Nullable
     var defaultQueueId: String? = null
 
-    @Nullable
-    var defaultWorkerEndpoint: String? = null
+    @Nonnull
+    lateinit var workerEndpoint: String
 
     @Nullable
-    var defaultWorkerEndpointRoute: String? = null
+    var workerEndpointRoute: String? = null
 }
