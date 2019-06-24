@@ -6,8 +6,8 @@ plugins {
     id "org.jetbrains.kotlin.plugin.spring" version "1.3.40"
 }
 
-group = "com.auritylab.spring.gcp.tasks"
-version = "0.0.1-SNAPSHOT"
+group "com.auritylab.spring.gcp.tasks"
+version "0.0.1-SNAPSHOT"
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
