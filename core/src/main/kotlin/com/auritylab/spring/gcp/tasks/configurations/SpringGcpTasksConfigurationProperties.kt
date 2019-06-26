@@ -19,8 +19,8 @@ class SpringGcpTasksConfigurationProperties {
     @Nullable
     var defaultQueueId: String? = null
 
-    @Nonnull
-    lateinit var workerEndpoint: String
+    @Nullable
+    var workerEndpoint: String? = null
 
     @Nullable
     var workerEndpointRoute: String? = null
