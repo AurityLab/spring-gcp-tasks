@@ -20,8 +20,9 @@ class SpringGcpTasksConfigurationProperties {
     var defaultQueueId: String? = null
 
     @Nullable
-    var workerEndpoint: String? = null
+    var defaultWorkerEndpoint: String? = null
 
-    @Nullable
-    var workerEndpointRoute: String? = null
+    var defaultWorkerSubRoute: String = ""
+
+    var workerMainRoute: String = "/tasks"
 }

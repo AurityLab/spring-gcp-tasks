@@ -65,7 +65,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         var urlStr = annotation?.customEndpoint
         if (urlStr != null && urlStr == ":") urlStr = null
 
-        return URL(urlStr ?: properties.workerEndpoint ?:
+        return URL(urlStr ?: properties.defaultWorkerEndpoint ?:
             throw TaskInvalidEndpointException("No worker endpoint given!"))
     }
 
@@ -86,7 +86,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         var routeStr = annotation?.customRoute
         if (routeStr != null && routeStr == ":") routeStr = null
 
-        return routeStr ?: properties.workerEndpointRoute ?: ""
+        return properties.workerMainRoute + (routeStr ?: properties.defaultWorkerSubRoute)
     }
 
     /**
