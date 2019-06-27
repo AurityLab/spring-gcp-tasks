@@ -14,7 +14,6 @@ import com.auritylab.spring.gcp.tasks.core.TaskExecutor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
-import org.springframework.stereotype.Component
 import java.net.URL
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -22,7 +21,7 @@ import kotlin.reflect.full.findAnnotation
 /**
  * Abstract class for task worker implementations.
  */
-@Component
+//@Component
 abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     companion object {
         internal fun runFor(worker: ITaskWorker<*>, payload: String, id: UUID) {
