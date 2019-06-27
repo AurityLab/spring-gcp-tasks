@@ -9,7 +9,7 @@ import javax.annotation.Nullable
 @Component
 @ConfigurationProperties("com.auritylab.spring.gcp.tasks")
 @Validated
-class SpringGcpTasksConfigurationProperties {
+class CloudTasksConfiguration {
     @Nullable
     var defaultProjectId: String? = null
 

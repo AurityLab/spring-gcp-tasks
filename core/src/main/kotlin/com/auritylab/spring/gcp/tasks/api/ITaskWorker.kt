@@ -9,7 +9,7 @@ import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameExcepti
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueueFactory
-import com.auritylab.spring.gcp.tasks.configurations.SpringGcpTasksConfigurationProperties
+import com.auritylab.spring.gcp.tasks.configurations.CloudTasksConfiguration
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,7 +36,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     private lateinit var taskExecutor: TaskExecutor
 
     @Autowired
-    private lateinit var properties: SpringGcpTasksConfigurationProperties
+    private lateinit var properties: CloudTasksConfiguration
 
     @Autowired
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
@@ -72,7 +72,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     /**
      * Will return the final worker endpoint main route.
      *
-     * Represents [SpringGcpTasksConfigurationProperties.workerMainRoute].
+     * Represents [CloudTasksConfiguration.workerMainRoute].
      *
      * @return The worker endpoint main route
      */
