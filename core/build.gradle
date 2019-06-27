@@ -30,6 +30,7 @@ dependencies {
 
     // spring
     implementation "org.springframework:spring-web:5.1.8.RELEASE"
+    //implementation "org.springframework:spring-webmvc:5.1.8.RELEASE"
     implementation "org.springframework.cloud:spring-cloud-gcp-starter"
 
     // gcp standalone

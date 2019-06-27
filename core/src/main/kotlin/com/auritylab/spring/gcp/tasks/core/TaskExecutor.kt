@@ -12,19 +12,26 @@ import java.util.*
 class TaskExecutor(
     private val taskCredentials: TaskCredentialsService
 ) {
+    companion object {
+        const val CLOUD_TASKS_SUB_ROUTE_HEADER = "CloudTasksRoute"
+        const val CLOUD_TASKS_TASK_ID_HEADER = "CloudTasksTaskId"
+    }
+
     fun execute(worker: ITaskWorker<*>, payload: String): UUID {
         val uuid = UUID.randomUUID()
         val queue = worker.getQueue().toString()
 
         val requestBody = CreateTaskRequest().apply {
             task = Task()
-                    .setName("$queue/tasks/$uuid")
-                    .setHttpRequest(
-                            HttpRequest()
-                                    .setHttpMethod("POST") // ToDo: Maybe expose as property as well
-                                    .setUrl("${worker.getEndpoint()}${worker.getRoute()}")
-                                    .setBody(payload)
-                    )
+                .setName("$queue/tasks/$uuid")
+                .setHttpRequest(
+                    HttpRequest()
+                        .setHttpMethod("POST") // ToDo: Maybe expose as property as well
+                        .setHeaders(mapOf(CLOUD_TASKS_SUB_ROUTE_HEADER to worker.getSubRoute()))
+                        .setHeaders(mapOf(CLOUD_TASKS_TASK_ID_HEADER to uuid.toString()))
+                        .setUrl("${worker.getEndpoint()}${worker.getMainRoute()}")
+                        .setBody(payload)
+                )
         }
 
         val request = taskCredentials.getCloudTasks()

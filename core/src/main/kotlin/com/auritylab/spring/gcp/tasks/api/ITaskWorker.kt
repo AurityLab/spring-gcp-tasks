@@ -70,7 +70,16 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     }
 
     /**
-     * Will return the final worker endpoint route.
+     * Will return the final worker endpoint main route.
+     *
+     * Represents [SpringGcpTasksConfigurationProperties.workerMainRoute].
+     *
+     * @return The worker endpoint main route
+     */
+    fun getMainRoute(): String = properties.workerMainRoute
+
+    /**
+     * Will return the final worker endpoint sub route.
      *
      * If a property is null, the default is used.
      * If that is also null, it will be set to an empty string.
@@ -78,15 +87,15 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * Default properties (used in order if one is null):
      * `[CloudTask] properties`, `spring configuration properties`
      *
-     * @return The worker endpoint route
+     * @return The worker endpoint sub route
      */
-    fun getRoute(): String {
+    fun getSubRoute(): String {
         val annotation = getCloudTaskAnnotation()
 
         var routeStr = annotation?.customRoute
         if (routeStr != null && routeStr == ":") routeStr = null
 
-        return properties.workerMainRoute + (routeStr ?: properties.defaultWorkerSubRoute)
+        return routeStr ?: properties.defaultWorkerSubRoute
     }
 
     /**
