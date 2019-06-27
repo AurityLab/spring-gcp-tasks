@@ -3,7 +3,6 @@ package com.auritylab.spring.gcp.tasks.configurations
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
-import javax.annotation.Nonnull
 import javax.annotation.Nullable
 
 @Component

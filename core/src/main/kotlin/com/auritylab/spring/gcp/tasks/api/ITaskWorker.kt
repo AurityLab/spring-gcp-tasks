@@ -21,7 +21,7 @@ import kotlin.reflect.full.findAnnotation
 /**
  * Abstract class for task worker implementations.
  */
-//@Component
+// @Component
 abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     companion object {
         internal fun runFor(worker: ITaskWorker<*>, payload: String, id: UUID) {
@@ -64,8 +64,8 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         var urlStr = annotation?.customEndpoint
         if (urlStr != null && urlStr == ":") urlStr = null
 
-        return URL(urlStr ?: properties.defaultWorkerEndpoint ?:
-            throw TaskInvalidEndpointException("No worker endpoint given!"))
+        return URL(urlStr ?: properties.defaultWorkerEndpoint
+            ?: throw TaskInvalidEndpointException("No worker endpoint given!"))
     }
 
     /**
