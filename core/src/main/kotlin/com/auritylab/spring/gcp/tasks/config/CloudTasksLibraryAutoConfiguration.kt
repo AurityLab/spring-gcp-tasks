@@ -1,8 +1,9 @@
-package com.auritylab.spring.gcp.tasks.configurations
+package com.auritylab.spring.gcp.tasks.config
 
+import com.auritylab.spring.gcp.tasks.core.config.CloudTasksConfiguration
 import com.auritylab.spring.gcp.tasks.core.BeanExplorer
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
-import com.auritylab.spring.gcp.tasks.remote.TaskCredentialsService
+import com.auritylab.spring.gcp.tasks.core.remote.TaskCredentialsService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -13,11 +14,6 @@ import org.springframework.context.annotation.Import
 @Import(CloudTasksConfiguration::class/*, BeanExplorer::class, TaskCredentialsService::class, TaskExecutor::class*/)
 @ConditionalOnBean(CloudTasksLibraryConfiguration.Marker::class)
 class CloudTasksLibraryAutoConfiguration {
-
-    init {
-        println("Test")
-    }
-
     @Bean
     @ConditionalOnMissingBean(BeanExplorer::class)
     fun beanExplorer() = BeanExplorer()

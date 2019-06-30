@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks
 
-import com.auritylab.spring.gcp.tasks.configurations.EnableCloudTasks
+import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.ServletComponentScan

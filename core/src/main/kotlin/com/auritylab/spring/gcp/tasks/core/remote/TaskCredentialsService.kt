@@ -1,4 +1,4 @@
-package com.auritylab.spring.gcp.tasks.remote
+package com.auritylab.spring.gcp.tasks.core.remote
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.HttpRequestInitializer

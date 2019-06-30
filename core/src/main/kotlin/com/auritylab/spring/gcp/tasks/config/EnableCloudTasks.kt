@@ -1,4 +1,4 @@
-package com.auritylab.spring.gcp.tasks.configurations
+package com.auritylab.spring.gcp.tasks.config
 
 import org.springframework.context.annotation.Import
 

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.auritylab.spring.gcp.tasks.configurations.CloudTasksLibraryAutoConfiguration
+com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration

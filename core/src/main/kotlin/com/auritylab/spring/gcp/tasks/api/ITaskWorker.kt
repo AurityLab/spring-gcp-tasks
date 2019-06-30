@@ -9,7 +9,7 @@ import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameExcepti
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueueFactory
-import com.auritylab.spring.gcp.tasks.configurations.CloudTasksConfiguration
+import com.auritylab.spring.gcp.tasks.core.config.CloudTasksConfiguration
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
