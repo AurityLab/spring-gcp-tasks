@@ -1,4 +1,4 @@
-package com.auritylab.spring.gcp.tasks
+package com.auritylab.spring.test.gcp.tasks
 
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
 import org.springframework.boot.autoconfigure.SpringBootApplication

@@ -1,4 +1,4 @@
-package com.auritylab.spring.gcp.tasks.tasks
+package com.auritylab.spring.test.gcp.tasks.tasks
 
 import com.auritylab.spring.gcp.tasks.api.ITaskWorker
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask

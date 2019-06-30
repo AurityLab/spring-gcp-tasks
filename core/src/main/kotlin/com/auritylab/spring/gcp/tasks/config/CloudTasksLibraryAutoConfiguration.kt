@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 
 @Configuration
-@Import(CloudTasksConfiguration::class/*, BeanExplorer::class, TaskCredentialsService::class, TaskExecutor::class*/)
+@Import(CloudTasksConfiguration::class, BeanExplorer::class, TaskCredentialsService::class, TaskExecutor::class)
 @ConditionalOnBean(CloudTasksLibraryConfiguration.Marker::class)
 class CloudTasksLibraryAutoConfiguration {
     @Bean
@@ -24,5 +24,5 @@ class CloudTasksLibraryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TaskExecutor::class)
-    fun taskExecutor(taskCredentialsService: TaskCredentialsService) = TaskExecutor(taskCredentialsService)
+    fun taskExecutor() = TaskExecutor(taskCredentialsService())
 }

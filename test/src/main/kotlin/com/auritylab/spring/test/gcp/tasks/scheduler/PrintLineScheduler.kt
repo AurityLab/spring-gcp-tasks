@@ -1,6 +1,6 @@
-package com.auritylab.spring.gcp.tasks.scheduler
+package com.auritylab.spring.test.gcp.tasks.scheduler
 
-import com.auritylab.spring.gcp.tasks.tasks.PrintLineTask
+import com.auritylab.spring.test.gcp.tasks.tasks.PrintLineTask
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
