@@ -19,8 +19,11 @@ class TaskCredentialsService {
         if (credentials.createScopedRequired())
             credentials = credentials.createScoped(arrayListOf("https://www.googleapis.com/auth/cloud-platform"))
 
-        cloudTasks = CloudTasks.Builder(httpTransport, jsonFactory, HttpRequestInitializer {
-            request -> request!!.headers.authorization = credentials.accessToken.tokenValue
+        cloudTasks = CloudTasks.Builder(httpTransport, jsonFactory, HttpRequestInitializer { request ->
+            run {
+                credentials.refreshIfExpired()
+                request!!.headers.authorization = credentials.accessToken.tokenValue
+            }
         }).build()
     }
 
