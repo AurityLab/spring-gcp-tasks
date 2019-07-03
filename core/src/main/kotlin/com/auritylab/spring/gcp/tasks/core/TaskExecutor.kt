@@ -20,6 +20,7 @@ class TaskExecutor(
     fun execute(worker: ITaskWorker<*>, payload: String): UUID {
         val uuid = UUID.randomUUID()
         val queue = worker.getQueue().toString()
+        val base64payload = Base64.getEncoder().encodeToString(payload.toByteArray())
 
         val requestBody = CreateTaskRequest().apply {
             task = Task()
@@ -30,7 +31,7 @@ class TaskExecutor(
                         .setHeaders(mapOf(CLOUD_TASKS_SUB_ROUTE_HEADER to worker.getSubRoute()))
                         .setHeaders(mapOf(CLOUD_TASKS_TASK_ID_HEADER to uuid.toString()))
                         .setUrl("${worker.getEndpoint()}${worker.getMainRoute()}")
-                        .setBody(payload)
+                        .setBody(base64payload)
                 )
         }
 
