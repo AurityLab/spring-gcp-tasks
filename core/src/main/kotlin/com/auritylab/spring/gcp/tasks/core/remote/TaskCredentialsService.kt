@@ -22,7 +22,8 @@ class TaskCredentialsService {
         cloudTasks = CloudTasks.Builder(httpTransport, jsonFactory, HttpRequestInitializer { request ->
             run {
                 credentials.refreshIfExpired()
-                request!!.headers.authorization = credentials.accessToken.tokenValue
+                println(credentials.accessToken)
+                request!!.headers.authorization = "Bearer ${credentials.accessToken.tokenValue}"
             }
         }).build()
     }
