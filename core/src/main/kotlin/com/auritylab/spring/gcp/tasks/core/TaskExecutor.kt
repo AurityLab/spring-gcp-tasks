@@ -1,17 +1,13 @@
 package com.auritylab.spring.gcp.tasks.core
 
 import com.auritylab.spring.gcp.tasks.api.ITaskWorker
-import com.auritylab.spring.gcp.tasks.core.remote.TaskCredentialsService
-import com.google.api.services.cloudtasks.v2beta3.model.CreateTaskRequest
-import com.google.api.services.cloudtasks.v2beta3.model.HttpRequest
-import com.google.api.services.cloudtasks.v2beta3.model.Task
+import com.google.cloud.tasks.v2beta3.CloudTasksClient
+import com.google.cloud.tasks.v2beta3.Task
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class TaskExecutor(
-    private val taskCredentials: TaskCredentialsService
-) {
+class TaskExecutor {
     companion object {
         const val CLOUD_TASKS_SUB_ROUTE_HEADER = "CloudTasksRoute"
         const val CLOUD_TASKS_TASK_ID_HEADER = "CloudTasksTaskId"
@@ -22,7 +18,11 @@ class TaskExecutor(
         val queue = worker.getQueue().toString()
         val base64payload = Base64.getEncoder().encodeToString(payload.toByteArray())
 
-        val requestBody = CreateTaskRequest().apply {
+        CloudTasksClient.create().use {
+            val task = Task.newBuilder()
+        }
+
+        /*val requestBody = CreateTaskRequest().apply {
             task = Task()
                 .setName("$queue/tasks/$uuid")
                 .setHttpRequest(
@@ -38,7 +38,7 @@ class TaskExecutor(
         val request = taskCredentials.getCloudTasks()
                 .projects().locations().queues().tasks().create(queue, requestBody)
 
-        val response = request.execute()
+        val response = request.execute()*/
 
         return uuid
     }
