@@ -15,7 +15,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "Greenwich.SR1")
+    set('springCloudVersion', "Greenwich.SR2")
 }
 
 dependencies {
