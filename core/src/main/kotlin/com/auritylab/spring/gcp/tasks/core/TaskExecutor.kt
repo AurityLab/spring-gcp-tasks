@@ -19,7 +19,7 @@ class TaskExecutor {
     fun execute(worker: ITaskWorker<*>, payload: String): UUID {
         val uuid = UUID.randomUUID()
         val queue = worker.getQueue().toString()
-        //val base64payload = Base64.getEncoder().encodeToString(payload.toByteArray())
+        // val base64payload = Base64.getEncoder().encodeToString(payload.toByteArray())
 
         CloudTasksClient.create().use {
             val task = Task.newBuilder()
