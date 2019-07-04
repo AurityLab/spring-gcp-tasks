@@ -30,44 +30,10 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9"
 
     // spring
-    implementation "org.springframework.boot:spring-boot-autoconfigure:2.1.6.RELEASE"
-    implementation "org.springframework.cloud:spring-cloud-gcp-autoconfigure:1.1.2.RELEASE"
     implementation "org.springframework:spring-web:5.1.8.RELEASE"
-    //implementation "org.springframework:spring-webmvc:5.1.8.RELEASE"
-    //implementation "org.springframework.cloud:spring-cloud-starter-task"
-    implementation "org.springframework.cloud:spring-cloud-gcp-core:1.1.2.RELEASE"
-
-    // gcp standalone
-    // implementation "com.google.api-client:google-api-client:1.30.2"
-    // implementation "com.google.apis:google-api-services-cloudtasks:v2beta3-rev19-1.25.0"
-    /*implementation("com.google.cloud:google-cloud-tasks:1.7.0") {
-        exclude group: "com.google.cloud", module: "gax"
-        exclude group: "com.google.cloud", module: "gax-grpc"
-
-        exclude group: "com.google.cloud", module: "google-cloud-core-grpc"
-
-        exclude group: "com.google.api.grpc", module: "proto-google-cloud-tasks-v2"
-        exclude group: "com.google.api.grpc", module: "proto-google-cloud-tasks-v2beta2"
-        exclude group: "com.google.api.grpc", module: "proto-google-cloud-tasks-v2beta3"
-    }
-    implementation "com.google.api:gax-grpc:1.47.0"
-    implementation "com.google.api:gax:1.47.0"
-
-    implementation "com.google.cloud:google-cloud-core-grpc:1.80.0"*/
-
-    //implementation "com.google.api.grpc:proto-google-cloud-tasks-v2beta3:0.63.0"
-
-    implementation("com.google.cloud:google-cloud-tasks") {
-        /*exclude group: "com.google.cloud", module: "gax"
-        exclude group: "com.google.cloud", module: "gax-grpc"
-
-        exclude group: "com.google.api.grpc", module: "proto-google-cloud-tasks-v2"
-        exclude group: "com.google.api.grpc", module: "proto-google-cloud-tasks-v2beta2"
-        exclude group: "com.google.api.grpc", module: "proto-google-cloud-tasks-v2beta3"*/
-    }
-
-    //implementation "com.google.api:gax-grpc:1.47.0"
-    //implementation "com.google.api:gax:1.47.0"
+    
+    // gcp
+    implementation "com.google.cloud:google-cloud-tasks"
 
     // ktlint
     ktlint("com.pinterest:ktlint:0.33.0")
@@ -75,8 +41,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        //mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-        mavenBom "com.google.cloud:google-cloud-bom:0.99.0-alpha"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
 
