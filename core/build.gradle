@@ -30,9 +30,12 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9"
 
     // spring
+    implementation "org.springframework.boot:spring-boot-autoconfigure:2.1.6.RELEASE"
+    implementation "org.springframework.cloud:spring-cloud-gcp-autoconfigure:1.1.2.RELEASE"
     implementation "org.springframework:spring-web:5.1.8.RELEASE"
     //implementation "org.springframework:spring-webmvc:5.1.8.RELEASE"
-    implementation "org.springframework.cloud:spring-cloud-gcp-starter"
+    //implementation "org.springframework.cloud:spring-cloud-starter-task"
+    implementation "org.springframework.cloud:spring-cloud-gcp-core:1.1.2.RELEASE"
 
     // gcp standalone
     // implementation "com.google.api-client:google-api-client:1.30.2"
@@ -72,7 +75,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        //mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         mavenBom "com.google.cloud:google-cloud-bom:0.99.0-alpha"
     }
 }
