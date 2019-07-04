@@ -29,7 +29,9 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}") {
+            bomProperty "google-cloud-bom.version", "0.99.0-alpha"
+        }
     }
 }
 

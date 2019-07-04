@@ -40,8 +40,15 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}") {
+            bomProperty "google-cloud-bom.version", "0.99.0-alpha"
+        }
     }
+    /*dependencies {
+        // See https://github.com/googleapis/google-cloud-java/issues/5555
+        dependency "com.google.api:gax-grpc:1.47.0"
+        dependency "com.google.api:gax:1.47.0"
+    }*/
 }
 
 task ktlint(type: JavaExec, group: "verification") {
