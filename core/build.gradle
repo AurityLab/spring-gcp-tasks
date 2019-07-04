@@ -1,5 +1,4 @@
 plugins {
-    // id("org.springframework.boot") version "2.1.6.RELEASE"
     id "io.spring.dependency-management" version "1.0.8.RELEASE"
 
     id "org.jetbrains.kotlin.jvm" version "1.3.41"
@@ -11,8 +10,7 @@ version "0.0.1-SNAPSHOT"
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-    //jcenter()
-    mavenCentral()
+    jcenter()
 }
 
 ext {
@@ -51,9 +49,6 @@ task ktlint(type: JavaExec, group: "verification") {
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
     args "src/**/*.kt"
-    // to generate report in checkstyle format prepend following args:
-    // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
-    // see https://github.com/pinterest/ktlint#usage for more
 }
 check.dependsOn ktlint
 test.dependsOn ktlint
