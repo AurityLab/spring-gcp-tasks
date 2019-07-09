@@ -11,7 +11,10 @@ import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueueFactory
 import com.auritylab.spring.gcp.tasks.core.config.CloudTasksConfiguration
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.serializer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 import java.net.URL
@@ -27,8 +30,6 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         internal fun runFor(worker: ITaskWorker<*>, payload: String, id: UUID) {
             worker.runWorker(payload, id)
         }
-
-        private val mapper = jacksonObjectMapper()
     }
 
     @Autowired
@@ -39,6 +40,9 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
     @Autowired
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
+
+    @UseExperimental(ImplicitReflectionSerializer::class)
+    private val boxedSerializer = PayloadWrapper.serializer(payloadClass.serializer())
 
     /**
      * Will return the final queue name as a [TaskQueue] object.
@@ -155,11 +159,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * @throws TaskNoRetryException If something went wrong and retry is NOT allowed
      */
     private fun runWorker(payload: String, id: UUID) {
-        val javaType = mapper.typeFactory.constructParametricType(
-            PayloadWrapper::class.java,
-            payloadClass::class.java
-        )
-        val wrapper: PayloadWrapper<T> = mapper.readValue(payload, javaType)
+        val wrapper: PayloadWrapper<T> = createConfiguredJson().parse(boxedSerializer, payload)
 
         // Run worker
         run(wrapper.payload, id)
@@ -176,7 +176,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     fun execute(payload: T): UUID {
         try {
             val wrapper = PayloadWrapper(payload)
-            val json = mapper.writeValueAsString(wrapper)
+            val json = createConfiguredJson().stringify(boxedSerializer, wrapper)
 
             return taskExecutor.execute(this, json)
         } catch (e: Exception) {
@@ -185,4 +185,6 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     }
 
     private fun getCloudTaskAnnotation(): CloudTask? = this::class.findAnnotation()
+
+    private fun createConfiguredJson(): Json = Json(configuration = JsonConfiguration.Stable.copy(strictMode = true))
 }
