@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component
 class PrintLineScheduler(
     private val printLineTask: PrintLineTask
 ) {
-    init {
-        println("Test")
-    }
-
     @Scheduled(fixedDelay = 180000, initialDelay = 5000)
     fun run() {
         println("Sending task")

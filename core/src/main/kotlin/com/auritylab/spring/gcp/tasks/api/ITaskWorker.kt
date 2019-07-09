@@ -156,8 +156,8 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      */
     private fun runWorker(payload: String, id: UUID) {
         val javaType = mapper.typeFactory.constructParametricType(
-                PayloadWrapper::class.java,
-                payloadClass::class.java
+            PayloadWrapper::class.java,
+            payloadClass::class.java
         )
         val wrapper: PayloadWrapper<T> = mapper.readValue(payload, javaType)
 
