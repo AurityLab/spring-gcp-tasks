@@ -21,11 +21,6 @@ class TaskEndpoint(
         @RequestHeader(TaskExecutor.CLOUD_TASKS_SUB_ROUTE_HEADER) subRoute: String,
         @RequestHeader(TaskExecutor.CLOUD_TASKS_TASK_ID_HEADER) uuid: String
     ) {
-
-        println(payload)
-        println(subRoute)
-        println(uuid)
-
         val worker = explorer.getWorkerBySubRoute(subRoute)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND,
                 "This application does not implement worker for given sub route!")

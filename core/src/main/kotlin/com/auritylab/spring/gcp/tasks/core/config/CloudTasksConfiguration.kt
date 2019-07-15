@@ -24,4 +24,6 @@ class CloudTasksConfiguration {
     var defaultWorkerSubRoute: String = ""
 
     var workerMainRoute: String = "/taskhandler"
+
+    var skipCloudTasks: Boolean = false
 }

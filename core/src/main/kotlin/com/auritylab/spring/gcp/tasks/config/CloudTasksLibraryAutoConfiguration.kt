@@ -26,5 +26,5 @@ class CloudTasksLibraryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TaskExecutor::class)
-    fun taskExecutor() = TaskExecutor()
+    fun taskExecutor(properties: CloudTasksConfiguration) = TaskExecutor(properties)
 }
