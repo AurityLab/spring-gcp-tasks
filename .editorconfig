@@ -1,0 +1,23 @@
+# top-most EditorConfig file
+root = true
+
+
+[*]
+# Unix-style newlines
+end_of_line = lf
+
+# a newline ending every file
+insert_final_newline = true
+
+
+[*.{kt,kts}]
+# use spaces instead of tabs
+indent_style = space
+
+# possible values: number (e.g. 2), "unset" (makes ktlint ignore indentation completely)
+indent_size=4
+
+# Comma-separated list of rules to disable (Since 0.34.0)
+# Note that rules in any ruleset other than the standard ruleset will need to be prefixed
+# by the ruleset identifier.
+disabled_rules=no-wildcard-imports,import-ordering
