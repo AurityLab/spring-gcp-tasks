@@ -39,9 +39,11 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @UseExperimental(ImplicitReflectionSerializer::class)
     private val boxedSerializer = PayloadWrapper.serializer(payloadClass.serializer())
 
-    private val settings = ITaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
+    private val settingsLazy = lazy {
+        ITaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
+    }
 
-    fun getSettings(): ITaskWorkerSettings = settings
+    fun getSettings(): ITaskWorkerSettings = settingsLazy.value
 
     /**
      * This method gets called when the worker receives a new
