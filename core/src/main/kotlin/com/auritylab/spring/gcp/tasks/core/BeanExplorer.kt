@@ -27,7 +27,7 @@ class BeanExplorer {
      */
     fun getWorkerByRoute(route: String): ITaskWorker<*>? {
         return try {
-            getWorkers().first { it.getRoute() == route }
+            getWorkers().first { it.getSettings().taskRequest.workerRoute == route }
         } catch (e: NoSuchElementException) {
             null
         }

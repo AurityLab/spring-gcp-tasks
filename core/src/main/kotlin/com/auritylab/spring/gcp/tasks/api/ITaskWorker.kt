@@ -1,14 +1,10 @@
 package com.auritylab.spring.gcp.tasks.api
 
 import java.util.*
-import com.auritylab.spring.gcp.tasks.api.exceptions.TaskNoRetryException
-import com.auritylab.spring.gcp.tasks.api.exceptions.TaskFailedToSubmitException
+import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksNoRetryException
+import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksFailedToSubmitTaskException
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
-import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidEndpointException
-import com.auritylab.spring.gcp.tasks.api.exceptions.TaskInvalidQueueNameException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
-import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
-import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueueFactory
 import com.auritylab.spring.gcp.tasks.core.config.CloudTasksConfiguration
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -17,7 +13,6 @@ import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.serializer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
-import java.net.URL
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
@@ -44,85 +39,9 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @UseExperimental(ImplicitReflectionSerializer::class)
     private val boxedSerializer = PayloadWrapper.serializer(payloadClass.serializer())
 
-    /**
-     * Will return the final queue name as a [TaskQueue] object.
-     *
-     * @return The queue name as a [TaskQueue] object
-     * @throws TaskInvalidQueueNameException If no queue name is specified
-     */
-    fun getQueue(): TaskQueue = getQueueFactory().of()
+    private val settings = ITaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
 
-    /**
-     * Will return the final worker endpoint.
-     *
-     * If a property is null, the default is used.
-     *
-     * Default properties (used in order if one is null):
-     * `[CloudTask] properties`, `spring configuration properties`
-     *
-     * @return The final worker endpoint
-     */
-    fun getEndpoint(): URL {
-        val annotation = getCloudTaskAnnotation()
-
-        var urlStr = annotation?.customEndpoint
-        if (urlStr != null && urlStr == ":") urlStr = null
-
-        return URL(urlStr ?: properties.defaultWorkerEndpoint
-            ?: throw TaskInvalidEndpointException("No worker endpoint given!"))
-    }
-
-    /**
-     * Will return the final worker endpoint route.
-     *
-     * Represents [CloudTasksConfiguration.defaultWorkerEndpointRoute].
-     *
-     * @return The worker endpoint main route
-     */
-    fun getEndpointRoute(): String = properties.defaultWorkerEndpointRoute
-
-    /**
-     * Will return the final worker endpoint route.
-     *
-     * If a property is null, the default is used.
-     * If that is also null, it will be set to an empty string.
-     *
-     * Default properties (used in order if one is null):
-     * `[CloudTask] properties`, `spring configuration properties`
-     *
-     * @return The worker endpoint route
-     */
-    fun getRoute(): String {
-        val annotation = getCloudTaskAnnotation()
-
-        var routeStr = annotation?.customRoute
-        if (routeStr != null && routeStr == ":") routeStr = null
-
-        return routeStr ?: properties.defaultWorkerRoute
-    }
-
-    /**
-     * Will return the [TaskQueueFactory] instance of this worker.
-     *
-     * @return The [TaskQueueFactory] instance of this worker
-     */
-    protected fun getQueueFactory(): TaskQueueFactory {
-        val annotation = getCloudTaskAnnotation()
-
-        var projectId = annotation?.projectId
-        var locationId = annotation?.locationId
-        var queueId = annotation?.queueId
-
-        if (projectId   != null && projectId    == "$") projectId = null    // ktlint-disable
-        if (locationId  != null && locationId   == "$") locationId = null   // ktlint-disable
-        if (queueId     != null && queueId      == "$") queueId = null      // ktlint-disable
-
-        return TaskQueueFactory(
-                projectId ?: gcpProjectIdProvider.projectId ?: properties.defaultProjectId,
-                locationId ?: properties.defaultLocationId,
-                queueId ?: properties.defaultQueueId
-        )
-    }
+    fun getSettings(): ITaskWorkerSettings = settings
 
     /**
      * This method gets called when the worker receives a new
@@ -134,7 +53,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * retires.
      *
      * If the task failed in a way, so that it should NOT be retried,
-     * throw an [TaskNoRetryException]. The task will be marked as
+     * throw an [CloudTasksNoRetryException]. The task will be marked as
      * successful in GCP Cloud Tasks to prevent retries.
      *
      * If the task succeeded by the implementation, just return
@@ -146,7 +65,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * @param payload The payload of the task
      * @param id The id of the task
      * @throws Exception If something went wrong and a retry is allowed
-     * @throws TaskNoRetryException If something went wrong and retry is NOT allowed
+     * @throws CloudTasksNoRetryException If something went wrong and retry is NOT allowed
      */
     protected abstract fun run(payload: T, id: UUID)
 
@@ -156,7 +75,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * @param payload The payload to use, as a string
      * @param id The id of the task
      * @throws Exception If something went wrong and a retry is allowed
-     * @throws TaskNoRetryException If something went wrong and retry is NOT allowed
+     * @throws CloudTasksNoRetryException If something went wrong and retry is NOT allowed
      */
     private fun runWorker(payload: String, id: UUID) {
         val wrapper: PayloadWrapper<T> = createConfiguredJson().parse(boxedSerializer, payload)
@@ -171,7 +90,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      *
      * @param payload The payload to use for the task
      * @return The uuid of the task
-     * @throws TaskFailedToSubmitException If something went wrong while adding task to queue
+     * @throws CloudTasksFailedToSubmitTaskException If something went wrong while adding task to queue
      */
     fun execute(payload: T): UUID {
         try {
@@ -180,7 +99,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
             return taskExecutor.execute(this, json)
         } catch (e: Exception) {
-            throw TaskFailedToSubmitException("Failed to submit task to GCP Cloud Tasks!", e)
+            throw CloudTasksFailedToSubmitTaskException("Failed to submit task to GCP Cloud Tasks!", e)
         }
     }
 

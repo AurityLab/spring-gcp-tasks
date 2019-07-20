@@ -31,7 +31,8 @@ class TaskExecutor(
 
     fun execute(worker: ITaskWorker<*>, payload: String): UUID {
         val uuid = UUID.randomUUID()
-        val queue = worker.getQueue().toString()
+        val settings = worker.getSettings()
+        val queue = settings.taskQueue.build()
         // val base64payload = Base64.getEncoder().encodeToString(payload.toByteArray())
 
         CloudTasksClient.create().use {
@@ -40,9 +41,9 @@ class TaskExecutor(
                 .setHttpRequest(
                     HttpRequest.newBuilder()
                         .setHttpMethod(HttpMethod.POST) // ToDo: Maybe expose as property as well
-                        .putHeaders(CLOUD_TASKS_ROUTE_HEADER, worker.getRoute())
+                        .putHeaders(CLOUD_TASKS_ROUTE_HEADER, settings.taskRequest.workerRoute)
                         .putHeaders(CLOUD_TASKS_ID_HEADER, uuid.toString())
-                        .setUrl("${worker.getEndpoint()}${worker.getEndpointRoute()}")
+                        .setUrl("${settings.taskRequest.buildRequestUrl()}")
                         .setBody(ByteString.copyFromUtf8(payload))
                         .build()
                 )
@@ -57,14 +58,16 @@ class TaskExecutor(
         return uuid
     }
 
+    // ToDo: Parse headers from request above (to have authentication headers, cloud tasks user agent, etc.)
     private fun executeLocally(worker: ITaskWorker<*>, task: Task, uuid: UUID) {
         val body = task.httpRequest.body.toByteArray()
+        val settings = worker.getSettings()
         val uri = URI(task.httpRequest.url)
 
         val request = java.net.http.HttpRequest.newBuilder()
             .POST(java.net.http.HttpRequest.BodyPublishers.ofByteArray(body))
             .uri(uri)
-            .header(CLOUD_TASKS_ROUTE_HEADER, worker.getRoute())
+            .header(CLOUD_TASKS_ROUTE_HEADER, settings.taskRequest.workerRoute)
             .header(CLOUD_TASKS_ID_HEADER, uuid.toString())
             .build()
 

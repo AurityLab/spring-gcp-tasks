@@ -3,7 +3,7 @@
 Compiler argument needed: `-Xuse-experimental=kotlin.Experimental`
 
 ```kotlin
-@CloudTask(customRoute = "/notification")
+@CloudTask(route = "/notification")
 class NotificationWorker : ITaskWorker<NotificationWorker.Payload>(Payload::class) {
     override fun run(payload: Payload, id: UUID) {
         println("New notification task: $payload")
