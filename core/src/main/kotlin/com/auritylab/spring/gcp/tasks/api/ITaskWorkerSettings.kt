@@ -30,7 +30,6 @@ class ITaskWorkerSettings(
         if (endpointRouteStr != null && endpointRouteStr == ":") endpointRouteStr = null
         setEndpointRoute(endpointRouteStr ?: properties.defaultWorkerEndpointRoute)
 
-
         var routeStr = annotation?.route
         if (routeStr != null && routeStr == ":") routeStr = null
         setWorkerRoute(routeStr ?: properties.defaultWorkerRoute)
@@ -68,7 +67,7 @@ class ITaskWorkerSettings(
         builder.fromTaskRequest(taskRequest)
 
         builder.dslBuilder()
-        taskRequest =  builder.build()
+        taskRequest = builder.build()
     }
 
     /**
