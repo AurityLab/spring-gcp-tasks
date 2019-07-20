@@ -20,13 +20,14 @@ class BeanExplorer {
 
     /**
      * Will return the [ITaskWorker] instance matching given
-     * sub route, or null if not existing.
+     * route, or null if not existing.
      *
-     * @return The [ITaskWorker] instance matching given sub route, or null
+     * @param route The route to use
+     * @return The [ITaskWorker] instance matching given route, or null
      */
-    fun getWorkerBySubRoute(subRoute: String): ITaskWorker<*>? {
+    fun getWorkerByRoute(route: String): ITaskWorker<*>? {
         return try {
-            getWorkers().first { it.getSubRoute() == subRoute }
+            getWorkers().first { it.getRoute() == route }
         } catch (e: NoSuchElementException) {
             null
         }

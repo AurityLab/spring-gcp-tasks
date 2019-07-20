@@ -18,8 +18,15 @@ class TaskExecutor(
     private val properties: CloudTasksConfiguration
 ) {
     companion object {
-        const val CLOUD_TASKS_SUB_ROUTE_HEADER = "CloudTasksRoute"
-        const val CLOUD_TASKS_TASK_ID_HEADER = "CloudTasksTaskId"
+        /**
+         * Header for task route.
+         */
+        const val CLOUD_TASKS_ROUTE_HEADER = "CloudTasksRoute"
+
+        /**
+         * Header for task id.
+         */
+        const val CLOUD_TASKS_ID_HEADER = "CloudTasksTaskId"
     }
 
     fun execute(worker: ITaskWorker<*>, payload: String): UUID {
@@ -33,9 +40,9 @@ class TaskExecutor(
                 .setHttpRequest(
                     HttpRequest.newBuilder()
                         .setHttpMethod(HttpMethod.POST) // ToDo: Maybe expose as property as well
-                        .putHeaders(CLOUD_TASKS_SUB_ROUTE_HEADER, worker.getSubRoute())
-                        .putHeaders(CLOUD_TASKS_TASK_ID_HEADER, uuid.toString())
-                        .setUrl("${worker.getEndpoint()}${worker.getMainRoute()}")
+                        .putHeaders(CLOUD_TASKS_ROUTE_HEADER, worker.getRoute())
+                        .putHeaders(CLOUD_TASKS_ID_HEADER, uuid.toString())
+                        .setUrl("${worker.getEndpoint()}${worker.getEndpointRoute()}")
                         .setBody(ByteString.copyFromUtf8(payload))
                         .build()
                 )
@@ -57,8 +64,8 @@ class TaskExecutor(
         val request = java.net.http.HttpRequest.newBuilder()
             .POST(java.net.http.HttpRequest.BodyPublishers.ofByteArray(body))
             .uri(uri)
-            .header(CLOUD_TASKS_SUB_ROUTE_HEADER, worker.getSubRoute())
-            .header(CLOUD_TASKS_TASK_ID_HEADER, uuid.toString())
+            .header(CLOUD_TASKS_ROUTE_HEADER, worker.getRoute())
+            .header(CLOUD_TASKS_ID_HEADER, uuid.toString())
             .build()
 
         HttpClient.newHttpClient()

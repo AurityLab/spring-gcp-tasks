@@ -21,9 +21,9 @@ class CloudTasksConfiguration {
     @Nullable
     var defaultWorkerEndpoint: String? = null
 
-    var defaultWorkerSubRoute: String = ""
+    var workerEndpointRoute: String = "/taskhandler"
 
-    var workerMainRoute: String = "/taskhandler"
+    var defaultWorkerRoute: String = ""
 
     var skipCloudTasks: Boolean = false
 }

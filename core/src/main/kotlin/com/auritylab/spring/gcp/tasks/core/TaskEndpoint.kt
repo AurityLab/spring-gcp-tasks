@@ -18,10 +18,10 @@ class TaskEndpoint(
     @PostMapping("\${com.auritylab.spring.gcp.tasks.workerMainRoute}")
     fun workerEndpoint(
         @RequestBody payload: String,
-        @RequestHeader(TaskExecutor.CLOUD_TASKS_SUB_ROUTE_HEADER) subRoute: String,
-        @RequestHeader(TaskExecutor.CLOUD_TASKS_TASK_ID_HEADER) uuid: String
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_ROUTE_HEADER) route: String,
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_ID_HEADER) uuid: String
     ) {
-        val worker = explorer.getWorkerBySubRoute(subRoute)
+        val worker = explorer.getWorkerByRoute(route)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND,
                 "This application does not implement worker for given sub route!")
 
