@@ -75,11 +75,11 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     /**
      * Will return the final worker endpoint route.
      *
-     * Represents [CloudTasksConfiguration.workerEndpointRoute].
+     * Represents [CloudTasksConfiguration.defaultWorkerEndpointRoute].
      *
      * @return The worker endpoint main route
      */
-    fun getEndpointRoute(): String = properties.workerEndpointRoute
+    fun getEndpointRoute(): String = properties.defaultWorkerEndpointRoute
 
     /**
      * Will return the final worker endpoint route.
