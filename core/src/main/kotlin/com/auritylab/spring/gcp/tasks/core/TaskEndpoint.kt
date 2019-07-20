@@ -15,7 +15,7 @@ class TaskEndpoint(
 ) {
     // Default: /tasks
     // ToDo: Maybe check for "User-Agent: Google-Cloud-Tasks" as well
-    @PostMapping("\${com.auritylab.spring.gcp.tasks.workerMainRoute}")
+    @PostMapping("\${com.auritylab.spring.gcp.tasks.worker-main-route}")
     fun workerEndpoint(
         @RequestBody payload: String,
         @RequestHeader(TaskExecutor.CLOUD_TASKS_ROUTE_HEADER) route: String,
