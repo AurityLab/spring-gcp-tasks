@@ -42,7 +42,7 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.1"
 
     // ktlint
-    ktlint("com.pinterest:ktlint:0.34.0")
+    ktlint("com.pinterest:ktlint:0.34.1")
 }
 
 dependencyManagement {
