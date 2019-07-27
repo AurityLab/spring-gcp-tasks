@@ -7,10 +7,10 @@ import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
-import kotlinx.serialization.ImplicitReflectionSerializer
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.serializer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 import kotlin.reflect.KClass
@@ -36,8 +36,8 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @Autowired
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
-    private val boxedSerializer = PayloadWrapper.serializer(payloadClass.serializer())
+    // @UseExperimental(ImplicitReflectionSerializer::class)
+    // private val boxedSerializer = PayloadWrapper.serializer(payloadClass.serializer())
 
     private val settingsLazy = lazy {
         ITaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
@@ -79,8 +79,12 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * @throws Exception If something went wrong and a retry is allowed
      * @throws CloudTasksNoRetryException If something went wrong and retry is NOT allowed
      */
+    @Suppress("UNCHECKED_CAST")
     private fun runWorker(payload: String, id: UUID) {
-        val wrapper: PayloadWrapper<T> = createConfiguredJson().parse(boxedSerializer, payload)
+        // val wrapper: PayloadWrapper<T> = createConfiguredJson().parse(boxedSerializer, payload)
+
+        val token = TypeToken.getParameterized(PayloadWrapper::class.java, payloadClass.java)
+        val wrapper = Gson().getAdapter(token).fromJson(payload) as PayloadWrapper <T>
 
         // Run worker
         run(wrapper.payload, id)
@@ -97,7 +101,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     fun execute(payload: T): UUID {
         try {
             val wrapper = PayloadWrapper(payload)
-            val json = createConfiguredJson().stringify(boxedSerializer, wrapper)
+            val json = Gson().toJson(wrapper)
 
             return taskExecutor.execute(this, json)
         } catch (e: Exception) {

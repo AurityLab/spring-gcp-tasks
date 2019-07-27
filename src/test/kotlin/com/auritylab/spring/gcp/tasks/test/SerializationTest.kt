@@ -4,7 +4,6 @@ import com.auritylab.spring.gcp.tasks.api.ITaskWorker
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
-import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +21,8 @@ import java.util.UUID
 @TestPropertySource("/test-base.properties")
 class SerializationTest {
     companion object {
-        private var result: String? = null
+        private var resultStr: String? = null
+        private var resultCount: Int? = null
     }
 
     @Configuration
@@ -37,11 +37,12 @@ class SerializationTest {
     @CloudTask(projectId = "some-project", locationId = "europe-west1", queueId = "some-queue")
     class TestWorker : ITaskWorker<TestWorker.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {
-            result = payload.str
+            resultStr = payload.str
+            resultCount = payload.count.count
         }
 
-        @Serializable
-        data class Payload(val str: String)
+        data class Payload(val str: String, val count: Count)
+        data class Count(val count: Int)
     }
 
     @Test
@@ -49,9 +50,11 @@ class SerializationTest {
         @Autowired worker: TestWorker
     ) {
         val str = "test"
+        val count = 1
 
-        worker.execute(TestWorker.Payload(str))
+        worker.execute(TestWorker.Payload(str, TestWorker.Count(1)))
 
-        assert(result == str)
+        assert(resultStr == str)
+        assert(resultCount == count)
     }
 }
