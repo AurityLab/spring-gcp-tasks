@@ -3,14 +3,14 @@ package com.auritylab.spring.gcp.tasks.api
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
 import com.auritylab.spring.gcp.tasks.api.utils.request.TaskRequest
-import com.auritylab.spring.gcp.tasks.core.config.CloudTasksConfiguration
+import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 
 /**
  * Settings class for [ITaskWorker].
  */
 class ITaskWorkerSettings(
-    private val properties: CloudTasksConfiguration,
+    private val properties: CloudTasksProperties,
     private val gcpProjectIdProvider: GcpProjectIdProvider,
     private val annotation: CloudTask?
 ) {

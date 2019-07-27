@@ -1,4 +1,4 @@
-package com.auritylab.spring.gcp.tasks.core.config
+package com.auritylab.spring.gcp.tasks.core.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
@@ -8,7 +8,7 @@ import javax.annotation.Nullable
 @Component
 @ConfigurationProperties("com.auritylab.spring.gcp.tasks")
 @Validated
-class CloudTasksConfiguration {
+class CloudTasksProperties {
     @Nullable
     var defaultProjectId: String? = null
 

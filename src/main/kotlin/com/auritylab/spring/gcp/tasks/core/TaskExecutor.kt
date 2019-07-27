@@ -1,7 +1,7 @@
 package com.auritylab.spring.gcp.tasks.core
 
 import com.auritylab.spring.gcp.tasks.api.ITaskWorker
-import com.auritylab.spring.gcp.tasks.core.config.CloudTasksConfiguration
+import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
 import com.google.cloud.tasks.v2beta3.CloudTasksClient
 import com.google.cloud.tasks.v2beta3.HttpMethod
 import com.google.cloud.tasks.v2beta3.HttpRequest
@@ -15,7 +15,7 @@ import java.util.*
 
 @Component
 class TaskExecutor(
-    private val properties: CloudTasksConfiguration
+    private val properties: CloudTasksProperties
 ) {
     companion object {
         /**

@@ -5,7 +5,7 @@ import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksFailedToSubmitTaskException
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
-import com.auritylab.spring.gcp.tasks.core.config.CloudTasksConfiguration
+import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
@@ -31,7 +31,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     private lateinit var taskExecutor: TaskExecutor
 
     @Autowired
-    private lateinit var properties: CloudTasksConfiguration
+    private lateinit var properties: CloudTasksProperties
 
     @Autowired
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
