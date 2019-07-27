@@ -34,7 +34,7 @@ dependencies {
     // spring
     implementation "org.springframework:spring-core:5.1.8.RELEASE"
     implementation "org.springframework:spring-web:5.1.8.RELEASE"
-    implementation "org.springframework.boot:spring-boot-configuration-processor:2.1.6.RELEASE"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:2.1.6.RELEASE"
 
     // spring cloud
     implementation "org.springframework.cloud:spring-cloud-gcp-starter"
@@ -63,6 +63,8 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.1"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.5.1"
 }
+compileKotlin.dependsOn(processResources)
+compileJava.dependsOn(processResources)
 
 dependencyManagement {
     imports {
