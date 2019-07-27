@@ -26,4 +26,6 @@ class CloudTasksProperties {
     var defaultWorkerRoute: String = ""
 
     var skipCloudTasks: Boolean = false
+
+    var skipTaskEndpoint: Boolean = false
 }

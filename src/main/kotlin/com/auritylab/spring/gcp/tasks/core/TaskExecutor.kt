@@ -49,6 +49,8 @@ class TaskExecutor(
                 )
                 .build()
 
+            if (properties.skipTaskEndpoint)
+                executeDirectly(worker, task, uuid)
             if (properties.skipCloudTasks)
                 executeLocally(worker, task, uuid)
             else
@@ -73,5 +75,10 @@ class TaskExecutor(
 
         HttpClient.newHttpClient()
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+    }
+
+    private fun executeDirectly(worker: ITaskWorker<*>, task: Task, uuid: UUID) {
+        val body = task.httpRequest.body
+        ITaskWorker.runFor(worker, body.toStringUtf8(), uuid)
     }
 }
