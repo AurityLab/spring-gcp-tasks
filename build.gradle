@@ -9,7 +9,7 @@ plugins {
 }
 
 group "com.auritylab.spring.gcp.tasks"
-version "0.1.1-SNAPSHOT"
+version "0.1.2-SNAPSHOT"
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
