@@ -9,8 +9,6 @@ import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 import kotlin.reflect.KClass
@@ -35,9 +33,6 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
     @Autowired
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
-
-    // @UseExperimental(ImplicitReflectionSerializer::class)
-    // private val boxedSerializer = PayloadWrapper.serializer(payloadClass.serializer())
 
     private val settingsLazy = lazy {
         ITaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
@@ -81,8 +76,6 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      */
     @Suppress("UNCHECKED_CAST")
     private fun runWorker(payload: String, id: UUID) {
-        // val wrapper: PayloadWrapper<T> = createConfiguredJson().parse(boxedSerializer, payload)
-
         val token = TypeToken.getParameterized(PayloadWrapper::class.java, payloadClass.java)
         val wrapper = Gson().getAdapter(token).fromJson(payload) as PayloadWrapper <T>
 
@@ -110,6 +103,4 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     }
 
     private fun getCloudTaskAnnotation(): CloudTask? = this::class.findAnnotation()
-
-    private fun createConfiguredJson(): Json = Json(configuration = JsonConfiguration.Stable.copy(strictMode = true))
 }
