@@ -35,6 +35,9 @@ class TaskExecutor(
         val queue = settings.taskQueue.build()
         // val base64payload = Base64.getEncoder().encodeToString(payload.toByteArray())
 
+        if (properties.skipTaskEndpoint)
+            return executeDirectly(worker, payload, uuid)
+
         CloudTasksClient.create().use {
             val task = Task.newBuilder()
                 .setName("$queue/tasks/$uuid")
@@ -49,8 +52,6 @@ class TaskExecutor(
                 )
                 .build()
 
-            if (properties.skipTaskEndpoint)
-                executeDirectly(worker, task, uuid)
             if (properties.skipCloudTasks)
                 executeLocally(worker, task, uuid)
             else
@@ -61,7 +62,7 @@ class TaskExecutor(
     }
 
     // ToDo: Parse headers from request above (to have authentication headers, cloud tasks user agent, etc.)
-    private fun executeLocally(worker: ITaskWorker<*>, task: Task, uuid: UUID) {
+    private fun executeLocally(worker: ITaskWorker<*>, task: Task, uuid: UUID): UUID {
         val body = task.httpRequest.body.toByteArray()
         val settings = worker.getSettings()
         val uri = URI(task.httpRequest.url)
@@ -75,10 +76,12 @@ class TaskExecutor(
 
         HttpClient.newHttpClient()
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+
+        return uuid
     }
 
-    private fun executeDirectly(worker: ITaskWorker<*>, task: Task, uuid: UUID) {
-        val body = task.httpRequest.body
-        ITaskWorker.runFor(worker, body.toStringUtf8(), uuid)
+    private fun executeDirectly(worker: ITaskWorker<*>, payload: String, uuid: UUID): UUID {
+        ITaskWorker.runFor(worker, payload, uuid)
+        return uuid
     }
 }
