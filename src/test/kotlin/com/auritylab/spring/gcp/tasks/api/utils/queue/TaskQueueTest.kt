@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test
 
 class TaskQueueTest {
 
-    private fun checkQueueObject(projectId: String, locationId: String, queueId: String, queue: TaskQueue)
-        = queue.build() == "projects/$projectId/locations/$locationId/queues/$queueId"
+    private fun checkQueueObject(projectId: String, locationId: String, queueId: String, queue: TaskQueue) =
+        queue.build() == "projects/$projectId/locations/$locationId/queues/$queueId"
 
     @Test
     fun `Test TaskQueue object`() {
@@ -31,5 +31,4 @@ class TaskQueueTest {
 
         assert(checkQueueObject(testProjectId, testLocationId, testQueueId, queue))
     }
-
 }

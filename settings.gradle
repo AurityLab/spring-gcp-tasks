@@ -11,6 +11,3 @@ pluginManagement {
     }
 }
 rootProject.name = "spring-gcp-tasks"
-
-include ":core"
-include ":test"
