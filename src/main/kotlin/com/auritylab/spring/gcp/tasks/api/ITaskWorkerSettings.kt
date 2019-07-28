@@ -3,7 +3,7 @@ package com.auritylab.spring.gcp.tasks.api
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
 import com.auritylab.spring.gcp.tasks.api.utils.request.TaskRequest
-import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
+import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 
 /**

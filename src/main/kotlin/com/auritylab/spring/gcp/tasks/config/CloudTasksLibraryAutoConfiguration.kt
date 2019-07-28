@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks.config
 
-import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
+import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.BeanExplorer
 import com.auritylab.spring.gcp.tasks.core.TaskEndpoint
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor

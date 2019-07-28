@@ -6,7 +6,7 @@ import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksFailedToSubmitTas
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksPayloadException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
-import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
+import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
