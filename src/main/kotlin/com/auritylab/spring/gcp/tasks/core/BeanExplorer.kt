@@ -3,6 +3,7 @@ package com.auritylab.spring.gcp.tasks.core
 import com.auritylab.spring.gcp.tasks.api.ITaskWorker
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
+import java.util.Collections
 
 @Component
 class BeanExplorer {
@@ -12,10 +13,12 @@ class BeanExplorer {
      * Will return a list with all [ITaskWorker] instances
      * in application.
      *
+     * This list is unmodifiable.
+     *
      * @return List with all [ITaskWorker] instances n application
      */
     fun getWorkers(): List<ITaskWorker<*>> {
-        return workers
+        return Collections.unmodifiableList(workers)
     }
 
     /**
