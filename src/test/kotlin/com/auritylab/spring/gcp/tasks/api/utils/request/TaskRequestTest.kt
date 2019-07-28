@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test
 import java.net.URL
 
 class TaskRequestTest {
-    private fun checkRequestObject(endpoint: String, endpointRoute: String, workerRoute: String, request: TaskRequest) =
-        request.buildRequestUrl() == URL(endpoint + endpointRoute) && request.workerRoute == workerRoute
+    companion object {
+        fun checkRequestObject(endpoint: String, endpointRoute: String, workerRoute: String, request: TaskRequest) =
+            request.buildRequestUrl() == URL(endpoint + endpointRoute) && request.workerRoute == workerRoute
+    }
 
     @Test
     fun `Test TaskRequest object`() {
