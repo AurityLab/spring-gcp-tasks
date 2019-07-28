@@ -51,7 +51,7 @@ class ITaskWorkerSettings(
         if (locationId  != null && locationId   == "$") locationId = null   // ktlint-disable
         if (queueId     != null && queueId      == "$") queueId = null      // ktlint-disable
 
-        setProjectId(projectId ?: gcpProjectIdProvider.projectId ?: properties.defaultProjectId)
+        setProjectId(projectId ?: properties.defaultProjectId ?: gcpProjectIdProvider.projectId)
         setLocationId(locationId ?: properties.defaultLocationId)
         setQueueId(queueId ?: properties.defaultQueueId)
     }
