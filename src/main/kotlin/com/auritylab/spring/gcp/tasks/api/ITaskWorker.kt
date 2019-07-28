@@ -34,6 +34,8 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @Autowired
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
 
+    private val gson = Gson()
+
     private val settingsLazy = lazy {
         ITaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
     }
@@ -77,7 +79,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @Suppress("UNCHECKED_CAST")
     private fun runWorker(payload: String, id: UUID) {
         val token = TypeToken.getParameterized(PayloadWrapper::class.java, payloadClass.java)
-        val wrapper = Gson().getAdapter(token).fromJson(payload) as PayloadWrapper <T>
+        val wrapper = gson.getAdapter(token).fromJson(payload) as PayloadWrapper <T>
 
         // Run worker
         run(wrapper.payload, id)
@@ -94,7 +96,7 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     fun execute(payload: T): UUID {
         try {
             val wrapper = PayloadWrapper(payload)
-            val json = Gson().toJson(wrapper)
+            val json = gson.toJson(wrapper)
 
             return taskExecutor.execute(this, json)
         } catch (e: Exception) {
