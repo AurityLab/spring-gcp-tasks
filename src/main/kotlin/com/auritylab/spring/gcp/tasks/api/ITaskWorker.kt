@@ -4,6 +4,7 @@ import java.util.*
 import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksFailedToSubmitTaskException
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
+import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksPayloadException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.core.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
@@ -79,7 +80,10 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @Suppress("UNCHECKED_CAST")
     private fun runWorker(payload: String, id: UUID) {
         val token = TypeToken.getParameterized(PayloadWrapper::class.java, payloadClass.java)
-        val wrapper = gson.getAdapter(token).fromJson(payload) as PayloadWrapper <T>
+
+        val wrapper = gson.getAdapter(token).fromJson(payload) as PayloadWrapper<T>?
+            ?: throw InvalidCloudTasksPayloadException("Task payload could not be deserialized to PayloadWrapper! " +
+                "Maybe invalid json?")
 
         // Run worker
         run(wrapper.payload, id)
