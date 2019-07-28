@@ -1,6 +1,8 @@
 package com.auritylab.spring.gcp.tasks.api.utils.request
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.net.MalformedURLException
 import java.net.URL
 
 class TaskRequestTest {
@@ -66,5 +68,29 @@ class TaskRequestTest {
             fromTaskRequest(request)
             setWorkerRoute(testWorkerRoute2)
         }))
+    }
+
+    @Test
+    fun `Test TaskRequest#buildRequestUrl with valid endpoint url`() {
+        val testEndpoint = "http://localhost:3000"
+        val testEndpointRoute = "/taskhandler"
+        val testWorkerRoute = "/test"
+
+        val request = TaskRequest(testEndpoint, testEndpointRoute, testWorkerRoute)
+
+        assert(request.buildRequestUrl() == URL(testEndpoint + testEndpointRoute))
+    }
+
+    @Test
+    fun `Test TaskRequest#buildRequestUrl with invalid endpoint url`() {
+        val testEndpoint = "something-invalid"
+        val testEndpointRoute = "/taskhandler"
+        val testWorkerRoute = "/test"
+
+        val request = TaskRequest(testEndpoint, testEndpointRoute, testWorkerRoute)
+
+        assertThrows<MalformedURLException> {
+            request.buildRequestUrl()
+        }
     }
 }
