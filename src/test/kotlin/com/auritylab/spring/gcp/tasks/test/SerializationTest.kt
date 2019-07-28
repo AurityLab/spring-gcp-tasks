@@ -31,7 +31,7 @@ class SerializationTest {
         fun testWorker(): TestWorker = TestWorker()
 
         @Bean
-        fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project" }
+        fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project-by-provider" }
     }
 
     @CloudTask(projectId = "some-project", locationId = "europe-west1", queueId = "some-queue")

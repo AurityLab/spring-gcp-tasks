@@ -47,7 +47,7 @@ class TaskEndpointTest {
         fun testWorker(): TestWorker = TestWorker()
 
         @Bean
-        fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project" }
+        fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project-by-provider" }
     }
 
     @Test

@@ -51,7 +51,7 @@ class BeanExplorerTest {
         @Bean fun someIrrelevantBean(): SomeIrrelevantBean = SomeIrrelevantBean()
 
         @Bean
-        fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project" }
+        fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project-by-provider" }
     }
 
     @Test
