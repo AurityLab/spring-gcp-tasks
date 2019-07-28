@@ -80,9 +80,12 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     @Suppress("UNCHECKED_CAST")
     private fun runWorker(payload: String, id: UUID) {
         val token = TypeToken.getParameterized(PayloadWrapper::class.java, payloadClass.java)
+        val wrapper = gson.getAdapter(token).fromJson(payload) as PayloadWrapper<T>
 
-        val wrapper = gson.getAdapter(token).fromJson(payload) as PayloadWrapper<T>?
-            ?: throw InvalidCloudTasksPayloadException("Task payload could not be deserialized to PayloadWrapper! " +
+        // Payload in wrapper is null if json is invalid
+        @Suppress("SENSELESS_COMPARISON")
+        if (wrapper.payload == null)
+            throw InvalidCloudTasksPayloadException("Task payload could not be deserialized to PayloadWrapper! " +
                 "Maybe invalid json?")
 
         // Run worker
