@@ -2,8 +2,6 @@
 
 Spring-gcp-tasks is a small library to integrate GCP Cloud Tasks into Spring projects.
 
-This is still a work in progress!
-
 ---
 
 * Installation
@@ -44,7 +42,7 @@ dependencyManagement {
 ```
 
 Maven:
-```maven
+```xml
 <dependency>
     <groupId>com.google.cloud</groupId>
     <artifactId>google-cloud-bom</artifactId>
