@@ -1,6 +1,8 @@
 package com.auritylab.spring.gcp.tasks.api.utils.queue
 
+import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksQueueException
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class TaskQueueTest {
     companion object {
@@ -65,5 +67,31 @@ class TaskQueueTest {
             fromTaskQueue(queue)
             setQueueId(testQueueId2)
         }))
+    }
+
+    @Test
+    fun `Test builder of TaskQueue class with missing values`() {
+        val testProjectId = "some-project"
+        val testLocationId = "some-location"
+        val testQueueId = "some-queue"
+
+        assertThrows<InvalidCloudTasksQueueException> {
+            TaskQueue {
+                setLocationId(testLocationId)
+                setQueueId(testQueueId)
+            }
+        }
+        assertThrows<InvalidCloudTasksQueueException> {
+            TaskQueue {
+                setProjectId(testProjectId)
+                setQueueId(testQueueId)
+            }
+        }
+        assertThrows<InvalidCloudTasksQueueException> {
+            TaskQueue {
+                setProjectId(testProjectId)
+                setLocationId(testLocationId)
+            }
+        }
     }
 }

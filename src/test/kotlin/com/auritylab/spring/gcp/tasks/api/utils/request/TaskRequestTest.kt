@@ -1,5 +1,6 @@
 package com.auritylab.spring.gcp.tasks.api.utils.request
 
+import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksRequestException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.net.MalformedURLException
@@ -37,7 +38,7 @@ class TaskRequestTest {
     }
 
     @Test
-    fun `Test builder of TaskQueue class with existing TaskQueue object as base`() {
+    fun `Test builder of TaskRequest class with existing TaskQueue object as base`() {
         val testEndpoint = "http://localhost:3000"
         val testEndpointRoute = "/taskhandler"
         val testWorkerRoute = "/test"
@@ -68,6 +69,32 @@ class TaskRequestTest {
             fromTaskRequest(request)
             setWorkerRoute(testWorkerRoute2)
         }))
+    }
+
+    @Test
+    fun `Test builder of TaskRequest class with missing values`() {
+        val testEndpoint = "http://localhost:3000"
+        val testEndpointRoute = "/taskhandler"
+        val testWorkerRoute = "/test"
+
+        assertThrows<InvalidCloudTasksRequestException> {
+            TaskRequest {
+                setEndpointRoute(testEndpointRoute)
+                setWorkerRoute(testWorkerRoute)
+            }
+        }
+        assertThrows<InvalidCloudTasksRequestException> {
+            TaskRequest {
+                setEndpoint(testEndpoint)
+                setWorkerRoute(testWorkerRoute)
+            }
+        }
+        assertThrows<InvalidCloudTasksRequestException> {
+            TaskRequest {
+                setEndpointRoute(testEndpointRoute)
+                setEndpoint(testEndpoint)
+            }
+        }
     }
 
     @Test
