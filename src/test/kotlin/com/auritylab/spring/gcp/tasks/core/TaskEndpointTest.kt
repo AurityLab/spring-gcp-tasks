@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks.core
 
-import com.auritylab.spring.gcp.tasks.api.ITaskWorker
+import com.auritylab.spring.gcp.tasks.api.TaskWorker
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksPayloadException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
@@ -32,7 +32,7 @@ class TaskEndpointTest {
     }
 
     @CloudTask(route = "test-worker")
-    class TestWorker : ITaskWorker<TestWorker.Payload>(Payload::class) {
+    class TestWorker : TaskWorker<TestWorker.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {
             resultTaskId = id
             resultPayload = payload

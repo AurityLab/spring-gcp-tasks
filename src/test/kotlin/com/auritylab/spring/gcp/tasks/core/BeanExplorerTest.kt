@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks.core
 
-import com.auritylab.spring.gcp.tasks.api.ITaskWorker
+import com.auritylab.spring.gcp.tasks.api.TaskWorker
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
@@ -23,19 +23,19 @@ import java.util.UUID
 @TestPropertySource("/test-base.properties")
 class BeanExplorerTest {
     @CloudTask(route = "test-worker-1")
-    class TestWorker1 : ITaskWorker<TestWorker1.Payload>(Payload::class) {
+    class TestWorker1 : TaskWorker<TestWorker1.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {}
         data class Payload(val str: String)
     }
 
     @CloudTask(route = "test-worker-2")
-    class TestWorker2 : ITaskWorker<TestWorker2.Payload>(Payload::class) {
+    class TestWorker2 : TaskWorker<TestWorker2.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {}
         data class Payload(val str: String)
     }
 
     @CloudTask(route = "test-worker-3")
-    class TestWorker3 : ITaskWorker<TestWorker3.Payload>(Payload::class) {
+    class TestWorker3 : TaskWorker<TestWorker3.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {}
         data class Payload(val str: String)
     }

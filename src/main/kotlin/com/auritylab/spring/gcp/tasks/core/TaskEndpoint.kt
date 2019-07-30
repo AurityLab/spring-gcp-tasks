@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks.core
 
-import com.auritylab.spring.gcp.tasks.api.ITaskWorker
+import com.auritylab.spring.gcp.tasks.api.TaskWorker
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -25,6 +25,6 @@ class TaskEndpoint(
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND,
                 "This application does not implement worker for given sub route!")
 
-        ITaskWorker.runFor(worker, payload, UUID.fromString(uuid))
+        TaskWorker.runFor(worker, payload, UUID.fromString(uuid))
     }
 }

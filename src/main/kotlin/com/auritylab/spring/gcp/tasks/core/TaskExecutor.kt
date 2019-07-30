@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks.core
 
-import com.auritylab.spring.gcp.tasks.api.ITaskWorker
+import com.auritylab.spring.gcp.tasks.api.TaskWorker
 import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import com.google.cloud.tasks.v2beta3.CloudTasksClient
 import com.google.cloud.tasks.v2beta3.HttpMethod
@@ -29,7 +29,7 @@ class TaskExecutor(
         const val CLOUD_TASKS_ID_HEADER = "CloudTasksId"
     }
 
-    fun execute(worker: ITaskWorker<*>, payload: String): UUID {
+    fun execute(worker: TaskWorker<*>, payload: String): UUID {
         val uuid = UUID.randomUUID()
         val settings = worker.getSettings()
         val queue = settings.taskQueue.build()
@@ -62,7 +62,7 @@ class TaskExecutor(
     }
 
     // ToDo: Parse headers from request above (to have authentication headers, cloud tasks user agent, etc.)
-    private fun executeLocally(worker: ITaskWorker<*>, task: Task, uuid: UUID): UUID {
+    private fun executeLocally(worker: TaskWorker<*>, task: Task, uuid: UUID): UUID {
         val body = task.httpRequest.body.toByteArray()
         val settings = worker.getSettings()
         val uri = URI(task.httpRequest.url)
@@ -80,8 +80,8 @@ class TaskExecutor(
         return uuid
     }
 
-    private fun executeDirectly(worker: ITaskWorker<*>, payload: String, uuid: UUID): UUID {
-        ITaskWorker.runFor(worker, payload, uuid)
+    private fun executeDirectly(worker: TaskWorker<*>, payload: String, uuid: UUID): UUID {
+        TaskWorker.runFor(worker, payload, uuid)
         return uuid
     }
 }

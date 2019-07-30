@@ -21,11 +21,11 @@ import kotlin.reflect.full.findAnnotation
 
 @EnableCloudTasks
 @ExtendWith(SpringExtension::class)
-@ContextConfiguration(classes = [ITaskWorkerSettingsTest.TestConfiguration::class])
+@ContextConfiguration(classes = [TaskWorkerSettingsTest.TestConfiguration::class])
 @TestPropertySource("/test-base.properties")
-class ITaskWorkerSettingsTest {
+class TaskWorkerSettingsTest {
     @CloudTask
-    class TestWorker1 : ITaskWorker<TestWorker1.Payload>(Payload::class) {
+    class TestWorker1 : TaskWorker<TestWorker1.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {}
         data class Payload(val str: String)
     }
@@ -36,7 +36,7 @@ class ITaskWorkerSettingsTest {
         endpoint = "http://127.0.0.1:5000", endpointRoute = "/custom-test-endpoint-route",
         route = "custom-test-worker-route"
     )
-    class TestWorker2 : ITaskWorker<TestWorker2.Payload>(Payload::class) {
+    class TestWorker2 : TaskWorker<TestWorker2.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {}
         data class Payload(val str: String)
     }
@@ -50,7 +50,7 @@ class ITaskWorkerSettingsTest {
         fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project-by-provider" }
     }
 
-    private fun <T : ITaskWorker<*>> getCloudTaskAnnotation(clazz: KClass<T>): CloudTask? = clazz.findAnnotation()
+    private fun <T : TaskWorker<*>> getCloudTaskAnnotation(clazz: KClass<T>): CloudTask? = clazz.findAnnotation()
 
     @Test
     fun `Test ITaskWorkerSettings with defaults in properties file`(
@@ -58,7 +58,7 @@ class ITaskWorkerSettingsTest {
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker1::class)
-        val settings = ITaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         assert(TaskQueueTest.checkQueueObject(properties.defaultProjectId!!, properties.defaultLocationId!!,
             properties.defaultQueueId!!, settings.taskQueue))
@@ -84,7 +84,7 @@ class ITaskWorkerSettingsTest {
         }
 
         val annotation = getCloudTaskAnnotation(TestWorker1::class)
-        val settings = ITaskWorkerSettings(modifiedProperties, gcpProjectIdProvider, annotation)
+        val settings = TaskWorkerSettings(modifiedProperties, gcpProjectIdProvider, annotation)
 
         assert(TaskQueueTest.checkQueueObject(gcpProjectIdProvider.projectId, modifiedProperties.defaultLocationId!!,
             modifiedProperties.defaultQueueId!!, settings.taskQueue))
@@ -99,7 +99,7 @@ class ITaskWorkerSettingsTest {
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker2::class)
-        val settings = ITaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         assert(TaskQueueTest.checkQueueObject("custom-test-project-id", "custom-test-location-id",
             "custom-test-queue-id", settings.taskQueue))
@@ -114,7 +114,7 @@ class ITaskWorkerSettingsTest {
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker2::class)
-        val settings = ITaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         settings.updateTaskQueue {
             setProjectId("updated-project-id")
@@ -141,7 +141,7 @@ class ITaskWorkerSettingsTest {
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker2::class)
-        val settings = ITaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         settings.updateTaskRequest {
             setEndpoint("http://127.0.0.1:7000")

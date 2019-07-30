@@ -19,9 +19,9 @@ import kotlin.reflect.full.findAnnotation
  * Abstract class for task worker implementations.
  */
 // @Component
-abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
+abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     companion object {
-        internal fun runFor(worker: ITaskWorker<*>, payload: String, id: UUID) {
+        internal fun runFor(worker: TaskWorker<*>, payload: String, id: UUID) {
             worker.runWorker(payload, id)
         }
     }
@@ -38,10 +38,10 @@ abstract class ITaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     private val gson = Gson()
 
     private val settingsLazy = lazy {
-        ITaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
+        TaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
     }
 
-    fun getSettings(): ITaskWorkerSettings = settingsLazy.value
+    fun getSettings(): TaskWorkerSettings = settingsLazy.value
 
     /**
      * This method gets called when the worker receives a new

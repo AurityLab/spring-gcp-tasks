@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks.test
 
-import com.auritylab.spring.gcp.tasks.api.ITaskWorker
+import com.auritylab.spring.gcp.tasks.api.TaskWorker
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
@@ -35,7 +35,7 @@ class SerializationTest {
     }
 
     @CloudTask(projectId = "some-project", locationId = "europe-west1", queueId = "some-queue")
-    class TestWorker : ITaskWorker<TestWorker.Payload>(Payload::class) {
+    class TestWorker : TaskWorker<TestWorker.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {
             resultStr = payload.str
             resultCount = payload.count.count

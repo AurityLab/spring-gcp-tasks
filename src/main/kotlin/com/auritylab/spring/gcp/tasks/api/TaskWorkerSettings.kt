@@ -7,16 +7,16 @@ import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 
 /**
- * Settings class for [ITaskWorker].
+ * Settings class for [TaskWorker].
  */
-class ITaskWorkerSettings(
+class TaskWorkerSettings(
     private val properties: CloudTasksProperties,
     private val gcpProjectIdProvider: GcpProjectIdProvider,
     private val annotation: CloudTask?
 ) {
     /**
      * Represents the [TaskRequest] object for the associated
-     * [ITaskWorker] instance. Defaults to global configuration.
+     * [TaskWorker] instance. Defaults to global configuration.
      *
      * Default properties (used in order if one is null):
      * `[CloudTask] properties`, `spring configuration properties`
@@ -37,7 +37,7 @@ class ITaskWorkerSettings(
 
     /**
      * Represents the [TaskQueue] object for the associated
-     * [ITaskWorker] instance. Defaults to global configuration.
+     * [TaskWorker] instance. Defaults to global configuration.
      *
      * Default properties (used in order if one is null):
      * `[CloudTask] properties`, `spring configuration properties`
@@ -57,7 +57,7 @@ class ITaskWorkerSettings(
     }
 
     /**
-     * Updates the [TaskRequest] object of this [ITaskWorkerSettings]
+     * Updates the [TaskRequest] object of this [TaskWorkerSettings]
      * instance with given builder function.
      *
      * Uses values from old [TaskRequest] object if not overridden.
@@ -71,7 +71,7 @@ class ITaskWorkerSettings(
     }
 
     /**
-     * Updates the [TaskQueue] object of this [ITaskWorkerSettings]
+     * Updates the [TaskQueue] object of this [TaskWorkerSettings]
      * instance with given builder function.
      *
      * Uses values from old [TaskQueue] object if not overridden.
