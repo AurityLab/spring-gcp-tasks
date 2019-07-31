@@ -110,19 +110,10 @@ check.dependsOn ktlint
 test.dependsOn ktlint
 
 compileKotlin {
-    kotlinOptions.freeCompilerArgs = getCompilerArguments()
+    kotlinOptions.freeCompilerArgs = Collections.singletonList("-Xjsr305=strict")
     kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
-    kotlinOptions.freeCompilerArgs = getCompilerArguments()
+    kotlinOptions.freeCompilerArgs = Collections.singletonList("-Xjsr305=strict")
     kotlinOptions.jvmTarget = "1.8"
-}
-
-static def getCompilerArguments() {
-    List<String> list = new ArrayList<>()
-
-    list.add("-Xjsr305=strict")
-    list.add("-Xuse-experimental=kotlin.Experimental")
-
-    return list
 }
