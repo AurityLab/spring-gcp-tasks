@@ -41,7 +41,9 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         TaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
     }
 
-    fun getSettings(): TaskWorkerSettings = settingsLazy.value
+    private fun getDefaultSettings(): TaskWorkerSettings = settingsLazy.value
+
+    open fun getSettings(): TaskWorkerSettings = getDefaultSettings()
 
     /**
      * This method gets called when the worker receives a new
