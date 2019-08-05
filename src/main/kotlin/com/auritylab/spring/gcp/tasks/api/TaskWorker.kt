@@ -43,6 +43,15 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
     private fun getDefaultSettings(): TaskWorkerSettings = settingsLazy.value
 
+    /**
+     * Will return settings for this [TaskWorker] instance.
+     *
+     * Can be overridden. Returns generated settings by [TaskWorker]
+     * instance configuration (annotation, spring properties, ...)
+     * as default.
+     *
+     * @return Settings for this [TaskWorker] instance.
+     */
     open fun getSettings(): TaskWorkerSettings = getDefaultSettings()
 
     /**
