@@ -29,34 +29,33 @@ class TaskExecutor(
         const val CLOUD_TASKS_ID_HEADER = "CloudTasksId"
     }
 
+    private val remoteHandler = RemoteHandler()
+
     fun execute(worker: TaskWorker<*>, payload: String): UUID {
         val uuid = UUID.randomUUID()
         val settings = worker.getSettings()
         val queue = settings.taskQueue.build()
-        // val base64payload = Base64.getEncoder().encodeToString(payload.toByteArray())
 
         if (properties.skipTaskEndpoint)
             return executeDirectly(worker, payload, uuid)
 
-        CloudTasksClient.create().use {
-            val task = Task.newBuilder()
-                .setName("$queue/tasks/$uuid")
-                .setHttpRequest(
-                    HttpRequest.newBuilder()
-                        .setHttpMethod(HttpMethod.POST) // ToDo: Maybe expose as property as well
-                        .putHeaders(CLOUD_TASKS_ROUTE_HEADER, settings.taskRequest.workerRoute)
-                        .putHeaders(CLOUD_TASKS_ID_HEADER, uuid.toString())
-                        .setUrl("${settings.taskRequest.buildRequestUrl()}")
-                        .setBody(ByteString.copyFromUtf8(payload))
-                        .build()
-                )
-                .build()
+        val task = Task.newBuilder()
+            .setName("$queue/tasks/$uuid")
+            .setHttpRequest(
+                HttpRequest.newBuilder()
+                    .setHttpMethod(HttpMethod.POST) // ToDo: Maybe expose as property as well
+                    .putHeaders(CLOUD_TASKS_ROUTE_HEADER, settings.taskRequest.workerRoute)
+                    .putHeaders(CLOUD_TASKS_ID_HEADER, uuid.toString())
+                    .setUrl("${settings.taskRequest.buildRequestUrl()}")
+                    .setBody(ByteString.copyFromUtf8(payload))
+                    .build()
+            )
+            .build()
 
             if (properties.skipCloudTasks)
                 executeLocally(worker, task, uuid)
             else
-                it.createTask(queue, task)
-        }
+                remoteHandler.createCloudTask(queue, task)
 
         return uuid
     }
@@ -74,8 +73,7 @@ class TaskExecutor(
             .header(CLOUD_TASKS_ID_HEADER, uuid.toString())
             .build()
 
-        HttpClient.newHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        remoteHandler.asyncHttpRequest(request, HttpResponse.BodyHandlers.ofString())
 
         return uuid
     }
@@ -83,5 +81,19 @@ class TaskExecutor(
     private fun executeDirectly(worker: TaskWorker<*>, payload: String, uuid: UUID): UUID {
         TaskWorker.runFor(worker, payload, uuid)
         return uuid
+    }
+
+    class RemoteHandler {
+        private val httpClient = HttpClient.newHttpClient()
+
+        fun asyncHttpRequest(request: java.net.http.HttpRequest, bodyHandler: HttpResponse.BodyHandler<*>) {
+            httpClient.sendAsync(request, bodyHandler)
+        }
+
+        fun createCloudTask(queue: String, task: Task) {
+            CloudTasksClient.create().use {
+                it.createTask(queue, task)
+            }
+        }
     }
 }
