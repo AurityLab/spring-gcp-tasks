@@ -59,7 +59,7 @@ class TaskEndpointTest {
         val wrapper = PayloadWrapper(payload)
 
         endpoint.workerEndpoint(Gson().toJson(wrapper),
-            "test-worker", id.toString())
+            "test-worker", id.toString(), "Google-Cloud-Tasks")
 
         assert(resultTaskId == id)
         assert(resultPayload == payload)
@@ -78,10 +78,29 @@ class TaskEndpointTest {
 
         val exception = assertThrows<ResponseStatusException> {
             endpoint.workerEndpoint(Gson().toJson(wrapper),
-                "test-worker-invalid", id.toString())
+                "test-worker-invalid", id.toString(), "Google-Cloud-Tasks")
         }
 
         assert(exception.status == HttpStatus.NOT_FOUND)
+
+        resultTaskId = null
+        resultPayload = null
+    }
+
+    @Test
+    fun `Test TaskEndpoint with invalid user agent on request`(
+        @Autowired endpoint: TaskEndpoint
+    ) {
+        val id = UUID.randomUUID()
+        val payload = TestWorker.Payload("test")
+        val wrapper = PayloadWrapper(payload)
+
+        val exception = assertThrows<ResponseStatusException> {
+            endpoint.workerEndpoint(Gson().toJson(wrapper),
+                "test-worker", id.toString(), "invalid-user-agent")
+        }
+
+        assert(exception.status == HttpStatus.FORBIDDEN)
 
         resultTaskId = null
         resultPayload = null
@@ -98,7 +117,7 @@ class TaskEndpointTest {
         // which leads to an invalid payload when parsing
         assertThrows<InvalidCloudTasksPayloadException> {
             endpoint.workerEndpoint(Gson().toJson(payload),
-                "test-worker", id.toString())
+                "test-worker", id.toString(), "Google-Cloud-Tasks")
         }
 
         resultTaskId = null

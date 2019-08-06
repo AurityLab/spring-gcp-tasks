@@ -64,7 +64,7 @@ class TaskExecutorCloudTasksTest {
                     assert(req.httpMethod == HttpMethod.POST)
                     assert(req.url == settings.taskRequest.buildRequestUrl().toString())
 
-                    req.headers.forEach { entry ->
+                    req.headersMap.forEach { entry ->
                         when (entry.key) {
                             TaskExecutor.CLOUD_TASKS_ROUTE_HEADER ->
                                 assert(entry.value == settings.taskRequest.workerRoute)

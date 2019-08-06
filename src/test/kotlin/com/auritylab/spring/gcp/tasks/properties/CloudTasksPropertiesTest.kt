@@ -37,5 +37,6 @@ class CloudTasksPropertiesTest {
 
         assert(properties.skipCloudTasks)
         assert(properties.skipTaskEndpoint)
+        assert(properties.overrideEndpointSecurityChecks == true)
     }
 }
