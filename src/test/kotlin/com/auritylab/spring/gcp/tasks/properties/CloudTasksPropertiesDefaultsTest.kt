@@ -27,6 +27,8 @@ class CloudTasksPropertiesDefaultsTest {
     fun `Test properties for default values`(
         @Autowired properties: CloudTasksProperties
     ) {
+        assert(properties.signatureSecret == "zAAir5p0PNFOdN7ayi63iVv1la9q6mPJ")
+
         assert(properties.defaultProjectId == null)
         assert(properties.defaultLocationId == null)
         assert(properties.defaultQueueId == null)

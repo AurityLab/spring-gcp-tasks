@@ -27,6 +27,8 @@ class CloudTasksPropertiesTest {
     fun `Test properties for configured values`(
         @Autowired properties: CloudTasksProperties
     ) {
+        assert(properties.signatureSecret == "zAAir5p0PNFOdN7ayi63iVv1la9q6mPJ")
+
         assert(properties.defaultProjectId == "some-project")
         assert(properties.defaultLocationId == "europe-west1")
         assert(properties.defaultQueueId == "some-queue")
