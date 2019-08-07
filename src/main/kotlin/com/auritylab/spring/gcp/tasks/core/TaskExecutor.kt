@@ -84,14 +84,14 @@ class TaskExecutor(
             .build()
 
             if (properties.skipCloudTasks)
-                executeLocally(worker, task, uuid)
+                executeLocally(task, uuid)
             else
                 remoteHandler.createCloudTask(queue, task)
 
         return uuid
     }
 
-    private fun executeLocally(worker: TaskWorker<*>, task: Task, uuid: UUID): UUID {
+    private fun executeLocally(task: Task, uuid: UUID): UUID {
         val body = task.httpRequest.body.toByteArray()
         val uri = URI(task.httpRequest.url)
 
