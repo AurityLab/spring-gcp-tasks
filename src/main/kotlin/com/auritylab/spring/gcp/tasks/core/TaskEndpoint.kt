@@ -43,6 +43,6 @@ class TaskEndpoint(
 
     private fun securityChecks(): Boolean {
         return properties.overrideEndpointSecurityChecks
-            ?: !properties.skipTaskEndpoint && !properties.skipCloudTasks
+            ?: (!properties.skipTaskEndpoint && !properties.skipCloudTasks)
     }
 }
