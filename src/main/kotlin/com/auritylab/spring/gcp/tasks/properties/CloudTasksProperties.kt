@@ -32,7 +32,4 @@ class CloudTasksProperties {
     var skipCloudTasks: Boolean = false
 
     var skipTaskEndpoint: Boolean = false
-
-    @Nullable
-    var overrideEndpointSecurityChecks: Boolean? = null
 }

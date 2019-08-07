@@ -1,7 +1,8 @@
 package com.auritylab.spring.gcp.tasks.core
 
 import com.auritylab.spring.gcp.tasks.api.TaskWorker
-import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignature
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -13,7 +14,7 @@ import java.util.UUID
 @RestController
 class TaskEndpoint(
     private val explorer: BeanExplorer,
-    private val properties: CloudTasksProperties
+    private val signatureHandler: TaskSignatureHandler
 ) {
     companion object {
         private const val USER_AGENT_HEADER = "User-Agent"
@@ -21,28 +22,40 @@ class TaskEndpoint(
     }
 
     // Default: /tasks
-    // ToDo: Maybe check for "User-Agent: Google-Cloud-Tasks" as well
+    // ToDo: Configure mapping differently as this doesn't work with default value given in properties file
     @PostMapping("\${com.auritylab.spring.gcp.tasks.default-worker-endpoint-route}")
     fun workerEndpoint(
         @RequestBody payload: String,
         @RequestHeader(TaskExecutor.CLOUD_TASKS_ROUTE_HEADER) route: String,
-        @RequestHeader(TaskExecutor.CLOUD_TASKS_ID_HEADER) uuid: String,
-        @RequestHeader(value = USER_AGENT_HEADER, required = false) userAgent: String?
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_ID_HEADER) uuidStr: String,
+        @RequestHeader(TaskExecutor.USER_AGENT_HEADER) userAgent: String,
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_TIMESTAMP_HEADER) timestampStr: String,
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_VERSION_HEADER) versionStr: String,
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_SIGNATURE_HEADER) signatureStr: String
     ) {
-        if (securityChecks()) {
-            if (userAgent != USER_AGENT_HEADER_VALUE)
-                throw ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")
-        }
+        // Transform data
+        val uuid = UUID.fromString(uuidStr)
 
+        val timestamp = timestampStr.toLong()
+        val version = versionStr.toInt()
+
+        // Check user agent header
+        if (userAgent != USER_AGENT_HEADER_VALUE)
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")
+
+        // Create signature object from header data
+        val signature = TaskSignature(signatureStr, timestamp, version)
+
+        // Verify signature
+        if (!signatureHandler.verify(uuid, signature))
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")
+
+        // Get worker
         val worker = explorer.getWorkerByRoute(route)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND,
                 "This application does not implement worker for given route!")
 
-        TaskWorker.runFor(worker, payload, UUID.fromString(uuid))
-    }
-
-    private fun securityChecks(): Boolean {
-        return properties.overrideEndpointSecurityChecks
-            ?: (!properties.skipTaskEndpoint && !properties.skipCloudTasks)
+        // Run worker
+        TaskWorker.runFor(worker, payload, uuid)
     }
 }

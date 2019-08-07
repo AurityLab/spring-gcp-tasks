@@ -5,6 +5,8 @@ import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignature
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
 import com.auritylab.spring.gcp.tasks.utils.ByteArraySubscriber
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -49,12 +51,17 @@ class TaskExecutorLocalTest {
     @Test
     fun `Test local task execution (with mocked http request)`(
         @Autowired testWorker: TestWorker,
-        @Autowired taskExecutor: TaskExecutor
+        @Autowired taskExecutor: TaskExecutor,
+        @Autowired signatureHandler: TaskSignatureHandler
     ) {
         val settings = testWorker.getSettings()
 
         val payload = TestWorker.Payload("test-str")
         var generatedId: String? = null
+
+        var timestamp: Long? = null
+        var version: Int? = null
+        var signatureStr: String? = null
 
         fun mockedAsyncHttpRequest(request: HttpRequest, bodyHandler: HttpResponse.BodyHandler<*>): Void? {
             request.let {
@@ -68,11 +75,23 @@ class TaskExecutorLocalTest {
                     }
 
                     when (entry.key) {
+                        TaskExecutor.USER_AGENT_HEADER ->
+                            assert(checkHeader(entry.value) == "Google-Cloud-Tasks")
+
                         TaskExecutor.CLOUD_TASKS_ROUTE_HEADER ->
                             assert(checkHeader(entry.value) == settings.taskRequest.workerRoute)
 
                         TaskExecutor.CLOUD_TASKS_ID_HEADER ->
                             generatedId = checkHeader(entry.value)
+
+                        TaskExecutor.CLOUD_TASKS_TIMESTAMP_HEADER ->
+                            timestamp = checkHeader(entry.value).toLong()
+
+                        TaskExecutor.CLOUD_TASKS_VERSION_HEADER ->
+                            version = checkHeader(entry.value).toInt()
+
+                        TaskExecutor.CLOUD_TASKS_SIGNATURE_HEADER ->
+                            signatureStr = checkHeader(entry.value)
 
                         else -> throw Exception("Undefined header for TaskExecutor local http request: ${entry.key}")
                     }
@@ -124,5 +143,8 @@ class TaskExecutorLocalTest {
         val id = testWorker.execute(payload)
 
         assert(id.toString() == generatedId)
+
+        val signature = TaskSignature(signatureStr!!, timestamp!!, version!!)
+        assert(signatureHandler.verify(id, signature))
     }
 }

@@ -28,6 +28,11 @@ class CloudTasksLibraryAutoConfiguration {
     fun beanExplorer() = BeanExplorer()
 
     @Bean
+    @ConditionalOnMissingBean(TaskSignatureHandler::class)
+    fun taskSignatureHandler(properties: CloudTasksProperties) = TaskSignatureHandler(properties)
+
+    @Bean
     @ConditionalOnMissingBean(TaskExecutor::class)
-    fun taskExecutor(properties: CloudTasksProperties) = TaskExecutor(properties)
+    fun taskExecutor(properties: CloudTasksProperties, taskSignatureHandler: TaskSignatureHandler) =
+        TaskExecutor(properties, taskSignatureHandler)
 }
