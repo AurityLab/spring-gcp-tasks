@@ -2,6 +2,7 @@ package com.auritylab.spring.gcp.tasks.core.signature
 
 import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
+import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,5 +84,23 @@ class TaskSignatureHandlerTest {
             signature.timestamp, signature.version - 5)
 
         assert(!handler.verify(uuid, modifiedSignature))
+    }
+
+    @Test
+    fun `Test with different secrets for signing and verifying`() {
+        val properties1 = CloudTasksProperties().apply {
+            signatureSecret = "n2TcmoPkKT4NdqQBGcxv4nsKGP8N014V"
+        }
+        val properties2 = CloudTasksProperties().apply {
+            signatureSecret = "pQQepqHsVmFDeiKGf7avvwaZmKClPayO"
+        }
+
+        val handler1 = TaskSignatureHandler(properties1)
+        val handler2 = TaskSignatureHandler(properties2)
+
+        val uuid = UUID.randomUUID()
+        val signature = handler1.sign(uuid)
+
+        assert(!handler2.verify(uuid, signature))
     }
 }
