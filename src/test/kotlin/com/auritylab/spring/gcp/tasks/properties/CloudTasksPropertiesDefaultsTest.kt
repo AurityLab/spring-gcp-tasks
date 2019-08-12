@@ -28,6 +28,8 @@ class CloudTasksPropertiesDefaultsTest {
         @Autowired properties: CloudTasksProperties
     ) {
         assert(properties.signatureSecret == "zAAir5p0PNFOdN7ayi63iVv1la9q6mPJ")
+        assert(!properties.autoCreateTaskQueues)
+        assert(!properties.autoCreateSchedulerJobs)
 
         assert(properties.defaultProjectId == null)
         assert(properties.defaultLocationId == null)
