@@ -40,6 +40,7 @@ dependencies {
 
     // gcp
     implementation "com.google.cloud:google-cloud-tasks"
+    implementation "com.google.cloud:google-cloud-scheduler"
 
     // gson
     implementation "com.google.code.gson:gson:2.8.5"
