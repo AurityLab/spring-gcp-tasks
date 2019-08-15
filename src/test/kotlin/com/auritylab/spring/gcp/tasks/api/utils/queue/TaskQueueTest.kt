@@ -7,7 +7,8 @@ import org.junit.jupiter.api.assertThrows
 class TaskQueueTest {
     companion object {
         fun checkQueueObject(projectId: String, locationId: String, queueId: String, queue: TaskQueue) =
-            queue.build() == "projects/$projectId/locations/$locationId/queues/$queueId"
+            queue.build() == "projects/$projectId/locations/$locationId/queues/$queueId" &&
+                queue.buildParent() == "projects/$projectId/locations/$locationId"
     }
 
     @Test

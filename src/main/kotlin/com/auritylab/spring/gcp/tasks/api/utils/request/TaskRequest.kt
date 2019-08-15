@@ -1,6 +1,6 @@
 package com.auritylab.spring.gcp.tasks.api.utils.request
 
-import com.auritylab.spring.gcp.tasks.api.annotations.CloudTasksDsl
+import com.auritylab.spring.gcp.tasks.api.annotations.dsl.CloudTasksDsl
 import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksRequestException
 import java.net.URL
 
