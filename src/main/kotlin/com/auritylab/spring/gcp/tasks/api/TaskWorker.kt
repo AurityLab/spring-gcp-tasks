@@ -1,5 +1,6 @@
 package com.auritylab.spring.gcp.tasks.api
 
+import com.auritylab.spring.gcp.tasks.api.annotations.CloudSchedule
 import java.util.*
 import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksFailedToSubmitTaskException
@@ -41,7 +42,8 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     private val gson = Gson()
 
     private val settingsLazy = lazy {
-        TaskWorkerSettings(properties, gcpProjectIdProvider, getCloudTaskAnnotation())
+        TaskWorkerSettings(properties, gcpProjectIdProvider,
+            getCloudTaskAnnotation(), getCloudScheduleAnnotation())
     }
 
     private fun getDefaultSettings(): TaskWorkerSettings = settingsLazy.value
@@ -139,4 +141,6 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     }
 
     private fun getCloudTaskAnnotation(): CloudTask? = this::class.findAnnotation()
+
+    private fun getCloudScheduleAnnotation(): CloudSchedule? = this::class.findAnnotation()
 }

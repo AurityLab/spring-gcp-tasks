@@ -1,8 +1,10 @@
 package com.auritylab.spring.gcp.tasks.api
 
+import com.auritylab.spring.gcp.tasks.api.annotations.CloudSchedule
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueue
 import com.auritylab.spring.gcp.tasks.api.utils.request.TaskRequest
+import com.auritylab.spring.gcp.tasks.api.utils.scheduler.TaskScheduler
 import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 
@@ -12,8 +14,25 @@ import org.springframework.cloud.gcp.core.GcpProjectIdProvider
 class TaskWorkerSettings(
     private val properties: CloudTasksProperties,
     private val gcpProjectIdProvider: GcpProjectIdProvider,
-    private val annotation: CloudTask?
+    private val annotation: CloudTask?,
+    private val schedulerAnnotation: CloudSchedule?
 ) {
+    /**
+     * Represents the [TaskScheduler] object for the associated
+     * [TaskWorker] instance. Defaults to global configuration.
+     *
+     * Default properties (used in order if one is null):
+     * `[CloudSchedule] properties`, `spring configuration properties`
+     */
+    var taskScheduler = TaskScheduler {
+        var cron = schedulerAnnotation?.cron
+
+        if (cron != null && cron == "$")
+            cron = null
+
+        setCron(cron ?: properties.defaultSchedulerCronValue)
+    }
+
     /**
      * Represents the [TaskRequest] object for the associated
      * [TaskWorker] instance. Defaults to global configuration.
@@ -54,6 +73,20 @@ class TaskWorkerSettings(
         setProjectId(projectId ?: properties.defaultProjectId ?: gcpProjectIdProvider.projectId)
         setLocationId(locationId ?: properties.defaultLocationId)
         setQueueId(queueId ?: properties.defaultQueueId)
+    }
+
+    /**
+     * Updates the [TaskScheduler] object of this [TaskWorkerSettings]
+     * instance with given builder function.
+     *
+     * Uses values from old [TaskScheduler] object if not overridden.
+     */
+    fun updateTaskScheduler(dslBuilder: TaskScheduler.Builder.() -> Unit) {
+        val builder = TaskScheduler.Builder()
+        builder.fromTaskScheduler(taskScheduler)
+
+        builder.dslBuilder()
+        taskScheduler = builder.build()
     }
 
     /**

@@ -15,7 +15,7 @@ class CloudTasksProperties {
 
     var autoCreateTaskQueues: Boolean = false
 
-    val autoCreateSchedulerJobs: Boolean = false
+    var autoCreateSchedulerJobs: Boolean = false
 
     @Nullable
     var defaultProjectId: String? = null
@@ -32,6 +32,9 @@ class CloudTasksProperties {
     var defaultWorkerEndpointRoute: String = "/taskhandler"
 
     var defaultWorkerRoute: String = ""
+
+    @Nullable
+    var defaultSchedulerCronValue: String? = null
 
     var skipCloudTasks: Boolean = false
 
