@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 class AutoCreateTaskQueues : IAutoCreateService<TaskQueue> {
     // ToDo: Add support for configuration of queues (maybe via ICloudTasksQueuesConfiguration interface
     //  to be implemented as service)
+
     override fun handle(obj: TaskQueue) {
         CloudTasksClient.create().use {
             val queue = CreateQueueRequest.newBuilder()
