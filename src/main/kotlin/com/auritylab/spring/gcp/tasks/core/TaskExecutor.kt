@@ -27,6 +27,11 @@ class TaskExecutor(
         const val USER_AGENT_HEADER = "UserAgent"
 
         /**
+         * Header value for user agent.
+         */
+        const val USER_AGENT_HEADER_VALUE = "Google-Cloud-Tasks"
+
+        /**
          * Header for task route.
          */
         const val CLOUD_TASKS_ROUTE_HEADER = "CloudTasksRoute"
@@ -99,7 +104,7 @@ class TaskExecutor(
         val headersList = headersMapToList(task.httpRequest.headersMap).apply {
             (this as ArrayList<String>).apply {
                 add(USER_AGENT_HEADER)
-                add("Google-Cloud-Tasks")
+                add(USER_AGENT_HEADER_VALUE)
             }
         }
 

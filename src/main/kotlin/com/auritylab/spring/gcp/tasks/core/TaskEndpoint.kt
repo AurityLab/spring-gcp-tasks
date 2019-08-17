@@ -16,10 +16,6 @@ class TaskEndpoint(
     private val explorer: BeanExplorer,
     private val signatureHandler: TaskSignatureHandler
 ) {
-    companion object {
-        private const val USER_AGENT_HEADER = "User-Agent"
-        private const val USER_AGENT_HEADER_VALUE = "Google-Cloud-Tasks"
-    }
 
     // Default: /tasks
     // ToDo: Configure mapping differently as this doesn't work with default value given in properties file
@@ -40,7 +36,7 @@ class TaskEndpoint(
         val version = versionStr.toInt()
 
         // Check user agent header
-        if (userAgent != USER_AGENT_HEADER_VALUE)
+        if (userAgent != TaskExecutor.USER_AGENT_HEADER_VALUE)
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")
 
         // Create signature object from header data
