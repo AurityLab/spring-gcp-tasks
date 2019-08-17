@@ -55,6 +55,11 @@ class TaskExecutor(
          * Header for task signature.
          */
         const val CLOUD_TASKS_SIGNATURE_HEADER = "CloudTasksSignature"
+
+        /**
+         * Header for if task is scheduled.
+         */
+        const val CLOUD_TASKS_IS_SCHEDULED = "CloudTasksIsScheduled"
     }
 
     private val remoteHandler = RemoteHandler()

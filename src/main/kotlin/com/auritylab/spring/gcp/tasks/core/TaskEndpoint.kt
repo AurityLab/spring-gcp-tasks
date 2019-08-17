@@ -27,7 +27,8 @@ class TaskEndpoint(
         @RequestHeader(TaskExecutor.USER_AGENT_HEADER) userAgent: String,
         @RequestHeader(TaskExecutor.CLOUD_TASKS_TIMESTAMP_HEADER) timestampStr: String,
         @RequestHeader(TaskExecutor.CLOUD_TASKS_VERSION_HEADER) versionStr: String,
-        @RequestHeader(TaskExecutor.CLOUD_TASKS_SIGNATURE_HEADER) signatureStr: String
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_SIGNATURE_HEADER) signatureStr: String,
+        @RequestHeader(TaskExecutor.CLOUD_TASKS_IS_SCHEDULED, defaultValue = "false") isScheduled: Boolean
     ) {
         // Transform data
         val uuid = UUID.fromString(uuidStr)
@@ -52,6 +53,9 @@ class TaskEndpoint(
                 "This application does not implement worker for given route!")
 
         // Run worker
-        TaskWorker.runFor(worker, payload, uuid)
+        if (isScheduled)
+            TaskWorker.runScheduledFor(worker, uuid)
+        else
+            TaskWorker.runFor(worker, payload, uuid)
     }
 }
