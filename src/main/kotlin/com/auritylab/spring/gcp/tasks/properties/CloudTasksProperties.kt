@@ -13,10 +13,6 @@ class CloudTasksProperties {
     @Nonnull
     lateinit var signatureSecret: String
 
-    var autoCreateTaskQueues: Boolean = false
-
-    var autoCreateSchedulerJobs: Boolean = false
-
     @Nullable
     var defaultProjectId: String? = null
 

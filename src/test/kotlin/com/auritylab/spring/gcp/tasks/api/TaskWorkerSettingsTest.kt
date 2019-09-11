@@ -75,8 +75,6 @@ class TaskWorkerSettingsTest {
         val modifiedProperties = CloudTasksProperties().apply {
             // Skipping defaultProjectId here
             signatureSecret = properties.signatureSecret
-            autoCreateTaskQueues = properties.autoCreateTaskQueues
-            autoCreateSchedulerJobs = properties.autoCreateSchedulerJobs
             defaultLocationId = properties.defaultLocationId
             defaultQueueId = properties.defaultQueueId
             defaultWorkerEndpoint = properties.defaultWorkerEndpoint

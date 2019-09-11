@@ -4,9 +4,6 @@ import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.BeanExplorer
 import com.auritylab.spring.gcp.tasks.core.TaskEndpoint
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
-import com.auritylab.spring.gcp.tasks.core.auto.AutoCreateManager
-import com.auritylab.spring.gcp.tasks.core.auto.services.AutoCreateSchedulerJobs
-import com.auritylab.spring.gcp.tasks.core.auto.services.AutoCreateTaskQueues
 import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -21,10 +18,7 @@ import org.springframework.context.annotation.Import
     BeanExplorer.Processor::class,
     TaskExecutor::class,
     TaskEndpoint::class,
-    TaskSignatureHandler::class,
-    AutoCreateManager::class,
-    AutoCreateTaskQueues::class,
-    AutoCreateSchedulerJobs::class
+    TaskSignatureHandler::class
 )
 @EnableConfigurationProperties(CloudTasksProperties::class)
 @ConditionalOnBean(CloudTasksLibraryConfiguration.Marker::class)
