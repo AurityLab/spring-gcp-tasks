@@ -1,10 +1,8 @@
 package com.auritylab.spring.gcp.tasks.api
 
-import com.auritylab.spring.gcp.tasks.api.annotations.CloudSchedule
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.utils.queue.TaskQueueTest
 import com.auritylab.spring.gcp.tasks.api.utils.request.TaskRequestTest
-import com.auritylab.spring.gcp.tasks.api.utils.scheduler.TaskSchedulerTest
 import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
 import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
@@ -38,7 +36,6 @@ class TaskWorkerSettingsTest {
         endpoint = "http://127.0.0.1:5000", endpointRoute = "/custom-test-endpoint-route",
         route = "custom-test-worker-route"
     )
-    @CloudSchedule(cron = "0 0 0 * *")
     class TestWorker2 : TaskWorker<TestWorker2.Payload>(Payload::class) {
         override fun run(payload: Payload, id: UUID) {}
         data class Payload(val str: String)
@@ -55,26 +52,19 @@ class TaskWorkerSettingsTest {
 
     private fun <T : TaskWorker<*>> getCloudTaskAnnotation(clazz: KClass<T>): CloudTask? = clazz.findAnnotation()
 
-    private fun <T : TaskWorker<*>> getCloudScheduleAnnotation(clazz: KClass<T>): CloudSchedule? = clazz.findAnnotation()
-
     @Test
     fun `Test TaskWorkerSettings with defaults in properties file`(
         @Autowired properties: CloudTasksProperties,
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker1::class)
-        val schedulerAnnotation = getCloudScheduleAnnotation(TestWorker1::class)
-
-        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation, schedulerAnnotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         assert(TaskQueueTest.checkQueueObject(properties.defaultProjectId!!, properties.defaultLocationId!!,
             properties.defaultQueueId!!, settings.taskQueue))
 
         assert(TaskRequestTest.checkRequestObject(properties.defaultWorkerEndpoint!!,
             properties.defaultWorkerEndpointRoute, properties.defaultWorkerRoute, settings.taskRequest))
-
-        assert(TaskSchedulerTest.checkSchedulerObject(properties.defaultSchedulerCronValue!!,
-            settings.taskScheduler))
     }
 
     @Test
@@ -92,24 +82,18 @@ class TaskWorkerSettingsTest {
             defaultWorkerEndpoint = properties.defaultWorkerEndpoint
             defaultWorkerEndpointRoute = properties.defaultWorkerEndpointRoute
             defaultWorkerRoute = properties.defaultWorkerRoute
-            defaultSchedulerCronValue = properties.defaultSchedulerCronValue
             skipCloudTasks = properties.skipCloudTasks
             skipTaskEndpoint = properties.skipTaskEndpoint
         }
 
         val annotation = getCloudTaskAnnotation(TestWorker1::class)
-        val schedulerAnnotation = getCloudScheduleAnnotation(TestWorker1::class)
-
-        val settings = TaskWorkerSettings(modifiedProperties, gcpProjectIdProvider, annotation, schedulerAnnotation)
+        val settings = TaskWorkerSettings(modifiedProperties, gcpProjectIdProvider, annotation)
 
         assert(TaskQueueTest.checkQueueObject(gcpProjectIdProvider.projectId, modifiedProperties.defaultLocationId!!,
             modifiedProperties.defaultQueueId!!, settings.taskQueue))
 
         assert(TaskRequestTest.checkRequestObject(modifiedProperties.defaultWorkerEndpoint!!,
             modifiedProperties.defaultWorkerEndpointRoute, modifiedProperties.defaultWorkerRoute, settings.taskRequest))
-
-        assert(TaskSchedulerTest.checkSchedulerObject(modifiedProperties.defaultSchedulerCronValue!!,
-            settings.taskScheduler))
     }
 
     @Test
@@ -118,18 +102,13 @@ class TaskWorkerSettingsTest {
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker2::class)
-        val schedulerAnnotation = getCloudScheduleAnnotation(TestWorker2::class)
-
-        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation, schedulerAnnotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         assert(TaskQueueTest.checkQueueObject("custom-test-project-id", "custom-test-location-id",
             "custom-test-queue-id", settings.taskQueue))
 
         assert(TaskRequestTest.checkRequestObject("http://127.0.0.1:5000",
             "/custom-test-endpoint-route", "custom-test-worker-route", settings.taskRequest))
-
-        assert(TaskSchedulerTest.checkSchedulerObject("0 0 0 * *",
-            settings.taskScheduler))
     }
 
     @Test
@@ -138,9 +117,7 @@ class TaskWorkerSettingsTest {
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker2::class)
-        val schedulerAnnotation = getCloudScheduleAnnotation(TestWorker2::class)
-
-        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation, schedulerAnnotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         settings.updateTaskQueue {
             setProjectId("updated-project-id")
@@ -167,9 +144,7 @@ class TaskWorkerSettingsTest {
         @Autowired gcpProjectIdProvider: GcpProjectIdProvider
     ) {
         val annotation = getCloudTaskAnnotation(TestWorker2::class)
-        val schedulerAnnotation = getCloudScheduleAnnotation(TestWorker2::class)
-
-        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation, schedulerAnnotation)
+        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation)
 
         settings.updateTaskRequest {
             setEndpoint("http://127.0.0.1:7000")
@@ -188,22 +163,5 @@ class TaskWorkerSettingsTest {
         }
         assert(TaskRequestTest.checkRequestObject("http://127.0.0.1:7000",
             "/updated-endpoint-route", "updated-worker-route", settings.taskRequest))
-    }
-
-    @Test
-    fun `Test TaskWorkerSettings scheduler object updating`(
-        @Autowired properties: CloudTasksProperties,
-        @Autowired gcpProjectIdProvider: GcpProjectIdProvider
-    ) {
-        val annotation = getCloudTaskAnnotation(TestWorker2::class)
-        val schedulerAnnotation = getCloudScheduleAnnotation(TestWorker2::class)
-
-        val settings = TaskWorkerSettings(properties, gcpProjectIdProvider, annotation, schedulerAnnotation)
-
-        settings.updateTaskScheduler {
-            setCron("0 0 0 0 *")
-        }
-        assert(TaskSchedulerTest.checkSchedulerObject("0 0 0 0 *",
-            settings.taskScheduler))
     }
 }

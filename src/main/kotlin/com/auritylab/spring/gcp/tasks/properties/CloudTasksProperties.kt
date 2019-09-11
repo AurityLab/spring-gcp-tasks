@@ -33,9 +33,6 @@ class CloudTasksProperties {
 
     var defaultWorkerRoute: String = ""
 
-    @Nullable
-    var defaultSchedulerCronValue: String? = null
-
     var skipCloudTasks: Boolean = false
 
     var skipTaskEndpoint: Boolean = false

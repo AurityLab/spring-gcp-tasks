@@ -64,7 +64,7 @@ class TaskEndpointTest {
 
         endpoint.workerEndpoint(Gson().toJson(wrapper),
             "test-worker", id.toString(), "Google-Cloud-Tasks",
-            signature.timestamp.toString(), signature.version.toString(), signature.signature, false)
+            signature.timestamp.toString(), signature.version.toString(), signature.signature)
 
         assert(resultTaskId == id)
         assert(resultPayload == payload)
@@ -87,7 +87,7 @@ class TaskEndpointTest {
         val exception = assertThrows<ResponseStatusException> {
             endpoint.workerEndpoint(Gson().toJson(wrapper),
                 "test-worker-invalid", id.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature, false)
+                signature.timestamp.toString(), signature.version.toString(), signature.signature)
         }
 
         assert(exception.status == HttpStatus.NOT_FOUND)
@@ -110,7 +110,7 @@ class TaskEndpointTest {
         val exception = assertThrows<ResponseStatusException> {
             endpoint.workerEndpoint(Gson().toJson(wrapper),
                 "test-worker", id.toString(), "invalid-user-agent",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature, false)
+                signature.timestamp.toString(), signature.version.toString(), signature.signature)
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)
@@ -134,7 +134,7 @@ class TaskEndpointTest {
         assertThrows<InvalidCloudTasksPayloadException> {
             endpoint.workerEndpoint(Gson().toJson(payload),
                 "test-worker", id.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature, false)
+                signature.timestamp.toString(), signature.version.toString(), signature.signature)
         }
 
         resultTaskId = null
@@ -155,7 +155,7 @@ class TaskEndpointTest {
         val exception = assertThrows<ResponseStatusException> {
             endpoint.workerEndpoint(Gson().toJson(wrapper),
                 "test-worker", id.toString(), "Google-Cloud-Tasks",
-                (signature.timestamp - 1000).toString(), signature.version.toString(), signature.signature, false)
+                (signature.timestamp - 1000).toString(), signature.version.toString(), signature.signature)
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)
@@ -178,7 +178,7 @@ class TaskEndpointTest {
         val exception = assertThrows<ResponseStatusException> {
             endpoint.workerEndpoint(Gson().toJson(wrapper),
                 "test-worker", id.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), (signature.version - 5).toString(), signature.signature, false)
+                signature.timestamp.toString(), (signature.version - 5).toString(), signature.signature)
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)
@@ -203,7 +203,7 @@ class TaskEndpointTest {
         val exception = assertThrows<ResponseStatusException> {
             endpoint.workerEndpoint(Gson().toJson(wrapper),
                 "test-worker", id1.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature, false)
+                signature.timestamp.toString(), signature.version.toString(), signature.signature)
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)

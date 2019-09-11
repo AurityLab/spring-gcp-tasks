@@ -1,6 +1,5 @@
 package com.auritylab.spring.gcp.tasks.api
 
-import com.auritylab.spring.gcp.tasks.api.annotations.CloudSchedule
 import java.util.*
 import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksNoRetryException
 import com.auritylab.spring.gcp.tasks.api.exceptions.CloudTasksFailedToSubmitTaskException
@@ -25,9 +24,6 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
         internal fun runFor(worker: TaskWorker<*>, payload: String, id: UUID) {
             worker.runWorker(payload, id)
         }
-        internal fun runScheduledFor(worker: TaskWorker<*>, id: UUID) {
-            worker.runScheduled(id)
-        }
     }
 
     @Autowired
@@ -43,7 +39,7 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
     private val settingsLazy = lazy {
         TaskWorkerSettings(properties, gcpProjectIdProvider,
-            getCloudTaskAnnotation(), getCloudScheduleAnnotation())
+            getCloudTaskAnnotation())
     }
 
     private fun getDefaultSettings(): TaskWorkerSettings = settingsLazy.value
@@ -84,19 +80,6 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      * @throws CloudTasksNoRetryException If something went wrong and retry is NOT allowed
      */
     protected abstract fun run(payload: T, id: UUID)
-
-    /**
-     * This method gets called when the worker receives a new
-     * task to process from Cloud Scheduler.
-     *
-     * This will NOT be retired if failed.
-     *
-     * This method is not designed to be called manually, but
-     * usually shouldn't be a problem.
-     *
-     * @param id The id of the task
-     */
-    protected open fun runScheduled(id: UUID) {}
 
     /**
      * Parses the given [payload] and runs this worker.
@@ -141,6 +124,4 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     }
 
     private fun getCloudTaskAnnotation(): CloudTask? = this::class.findAnnotation()
-
-    private fun getCloudScheduleAnnotation(): CloudSchedule? = this::class.findAnnotation()
 }

@@ -39,8 +39,6 @@ class CloudTasksPropertiesDefaultsTest {
         assert(properties.defaultWorkerEndpointRoute == "/taskhandler")
         assert(properties.defaultWorkerRoute == "")
 
-        assert(properties.defaultSchedulerCronValue == null)
-
         assert(!properties.skipCloudTasks)
         assert(!properties.skipTaskEndpoint)
     }
