@@ -32,4 +32,6 @@ class CloudTasksProperties {
     var skipCloudTasks: Boolean = false
 
     var skipTaskEndpoint: Boolean = false
+
+    var queueIdGlobalPrefix: String = ""
 }

@@ -39,5 +39,7 @@ class CloudTasksPropertiesDefaultsTest {
 
         assert(!properties.skipCloudTasks)
         assert(!properties.skipTaskEndpoint)
+
+        assert(properties.queueIdGlobalPrefix == "")
     }
 }
