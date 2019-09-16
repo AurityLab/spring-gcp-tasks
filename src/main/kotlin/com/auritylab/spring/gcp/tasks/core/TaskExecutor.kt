@@ -63,7 +63,7 @@ class TaskExecutor(
         val uuid = UUID.randomUUID()
         val settings = worker.getSettings()
 
-        val queue = settings.taskQueue.build()
+        val queue = settings.taskQueue.build(properties.queueIdGlobalPrefix)
         val signature = signatureHandler.sign(uuid)
 
         if (properties.skipTaskEndpoint)

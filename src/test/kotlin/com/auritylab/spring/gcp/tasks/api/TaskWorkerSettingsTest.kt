@@ -82,6 +82,7 @@ class TaskWorkerSettingsTest {
             defaultWorkerRoute = properties.defaultWorkerRoute
             skipCloudTasks = properties.skipCloudTasks
             skipTaskEndpoint = properties.skipTaskEndpoint
+            queueIdGlobalPrefix = properties.queueIdGlobalPrefix
         }
 
         val annotation = getCloudTaskAnnotation(TestWorker1::class)

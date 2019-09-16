@@ -4,7 +4,7 @@ import com.auritylab.spring.gcp.tasks.api.annotations.dsl.CloudTasksDsl
 import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksQueueException
 
 data class TaskQueue(val projectId: String, val locationId: String, val queueId: String) {
-    fun build(): String = "${buildParent()}/queues/$queueId"
+    fun build(queueIdPrefix: String = ""): String = "${buildParent()}/queues/$queueIdPrefix$queueId"
     fun buildParent(): String = "projects/$projectId/locations/$locationId"
 
     companion object {
