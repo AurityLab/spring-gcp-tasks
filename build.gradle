@@ -33,7 +33,7 @@ dependencies {
     // spring
     implementation "org.springframework:spring-core:5.2.0.RELEASE"
     implementation "org.springframework:spring-web:5.2.0.RELEASE"
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:2.1.8.RELEASE"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:2.1.9.RELEASE"
 
     // spring cloud
     implementation "org.springframework.cloud:spring-cloud-gcp-starter"
