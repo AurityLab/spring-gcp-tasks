@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class CloudTasksLibraryConfiguration {
     @Bean
-    fun cloudTasksLibraryBean() = Marker()
+    fun cloudTasksLibraryBean() = LibraryMarker()
 
-    class Marker
+    class LibraryMarker
 }
