@@ -4,8 +4,8 @@ import com.auritylab.spring.gcp.tasks.api.TaskWorker
 import com.auritylab.spring.gcp.tasks.api.annotations.CloudTask
 import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksPayloadException
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
-import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
-import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
+import com.auritylab.spring.gcp.tasks.config.endpoint.CloudTasksEndpointAutoConfiguration
+import com.auritylab.spring.gcp.tasks.config.endpoint.EnableCloudTasksWithEndpoint
 import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
 import com.google.gson.Gson
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.server.ResponseStatusException
 import java.util.UUID
 
-@EnableCloudTasks
+@EnableCloudTasksWithEndpoint
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [TaskEndpointTest.TestConfiguration::class])
 @TestPropertySource("/test-base.properties")
@@ -43,7 +43,7 @@ class TaskEndpointTest {
     }
 
     @Configuration
-    class TestConfiguration : CloudTasksLibraryAutoConfiguration() {
+    class TestConfiguration : CloudTasksEndpointAutoConfiguration() {
         @Bean
         fun testWorker(): TestWorker = TestWorker()
 

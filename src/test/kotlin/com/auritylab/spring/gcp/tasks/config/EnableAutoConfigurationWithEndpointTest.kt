@@ -1,5 +1,7 @@
 package com.auritylab.spring.gcp.tasks.config
 
+import com.auritylab.spring.gcp.tasks.config.endpoint.CloudTasksEndpointAutoConfiguration
+import com.auritylab.spring.gcp.tasks.config.endpoint.EnableCloudTasksWithEndpoint
 import com.auritylab.spring.gcp.tasks.core.BeanExplorer
 import com.auritylab.spring.gcp.tasks.core.TaskEndpoint
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
@@ -14,24 +16,24 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@EnableCloudTasks
+@EnableCloudTasksWithEndpoint
 @ExtendWith(SpringExtension::class)
-@ContextConfiguration(classes = [EnabledAutoConfigurationTest.TestConfiguration::class])
+@ContextConfiguration(classes = [EnableAutoConfigurationWithEndpointTest.TestConfiguration::class])
 @TestPropertySource("/test-base.properties")
-class EnabledAutoConfigurationTest {
+class EnableAutoConfigurationWithEndpointTest {
     @Configuration
-    class TestConfiguration : CloudTasksLibraryAutoConfiguration() {
+    class TestConfiguration : CloudTasksEndpointAutoConfiguration() {
         @Bean
         fun gcpProjectIdProvider(): GcpProjectIdProvider = GcpProjectIdProvider { "some-project-by-provider" }
     }
 
     @Test
-    fun `Test with auto configuration enabled`(
+    fun `Test with endpoint auto configuration enabled`(
         @Autowired context: ApplicationContext
     ) {
         assert(context.containsBean(BeanExplorer::class.qualifiedName!!))
         assert(context.containsBean(TaskExecutor::class.qualifiedName!!))
 
-        assert(!context.containsBean(TaskEndpoint::class.qualifiedName!!))
+        assert(context.containsBean(TaskEndpoint::class.qualifiedName!!))
     }
 }
