@@ -44,6 +44,9 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
 
     private fun getDefaultSettings(): TaskWorkerSettings = settingsLazy.value
 
+    internal fun referencesProvider(provider: TaskProvider<*, *>) =
+        provider.taskWorkerClass == this::class
+
     /**
      * Will return settings for this [TaskWorker] instance.
      *
