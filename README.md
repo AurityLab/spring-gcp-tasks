@@ -19,16 +19,16 @@ Note: *This isn't heavily production tested yet, but the library is in a finishe
 Gradle:
 ```groovy
 dependencies {
-    implementation "com.auritylab.spring.gcp.tasks:core:0.1.4-SNAPSHOT"
+    implementation "com.auritylab.spring-gcp-tasks:0.1.11"
 }
 ```
 
 Maven:
 ```xml
 <dependency>
-  <groupId>com.auritylab.spring.gcp.tasks</groupId>
-  <artifactId>core</artifactId>
-  <version>0.1.4-SNAPSHOT</version>
+  <groupId>com.auritylab</groupId>
+  <artifactId>spring-gcp-tasks</artifactId>
+  <version>0.1.11</version>
 </dependency>
 ```
 
@@ -146,7 +146,3 @@ class NotificationTest(
     }
 }
 ```
-
-### Limitations
-
-*TODO* (jackson & gson)
