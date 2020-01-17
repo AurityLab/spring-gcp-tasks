@@ -3,4 +3,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = "core"
+rootProject.name = "spring-gcp-tasks"

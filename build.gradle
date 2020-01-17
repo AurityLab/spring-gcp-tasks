@@ -9,7 +9,7 @@ plugins {
     id "nu.studer.credentials" version "2.1"
 }
 
-group "com.auritylab.spring.gcp.tasks"
+group "com.auritylab"
 version "0.1.10"
 sourceCompatibility = JavaVersion.VERSION_1_8
 
