@@ -3,6 +3,7 @@ package com.auritylab.spring.gcp.tasks.core.signature
 import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import com.google.common.hash.Hashing
 import org.springframework.stereotype.Service
+import java.lang.IllegalArgumentException
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
@@ -30,9 +31,13 @@ class TaskSignatureHandler(
 
     fun verify(signature: TaskSignature): Boolean {
         val taskData = signature.data
-
         val createdSignature = createSignature(properties.signatureSecret, taskData)
-        val givenSignature = decodeSignature(signature.signature)
+
+        val givenSignature = try {
+            decodeSignature(signature.signature)
+        } catch (e: IllegalArgumentException) {
+            return false
+        }
 
         return createdSignature.contentEquals(givenSignature)
     }
