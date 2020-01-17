@@ -19,7 +19,7 @@ Note: *This isn't heavily production tested yet, but the library is in a finishe
 Gradle:
 ```groovy
 dependencies {
-    implementation "com.auritylab.spring-gcp-tasks:0.1.11"
+    implementation "com.auritylab:spring-gcp-tasks:0.1.11"
 }
 ```
 
