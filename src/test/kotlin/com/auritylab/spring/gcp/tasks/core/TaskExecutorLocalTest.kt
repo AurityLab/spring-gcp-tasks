@@ -6,7 +6,7 @@ import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
 import com.auritylab.spring.gcp.tasks.core.signature.TaskSignature
-import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHelper
 import com.auritylab.spring.gcp.tasks.utils.ByteArraySubscriber
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -52,7 +52,7 @@ class TaskExecutorLocalTest {
     fun `Test local task execution (with mocked http request)`(
         @Autowired testWorker: TestWorker,
         @Autowired taskExecutor: TaskExecutor,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
         val settings = testWorker.getSettings()
 
@@ -144,7 +144,17 @@ class TaskExecutorLocalTest {
 
         assert(id.toString() == generatedId)
 
-        val signature = TaskSignature(signatureStr!!, timestamp!!, version!!)
-        assert(signatureHandler.verify(id, signature))
+        // Test signature
+
+        val payloadWrapper = PayloadWrapper(payload)
+        val payloadWrapperJson = Gson().toJson(payloadWrapper)
+
+        val signatureData = signatureHelper.createFromRequestSignatureData(
+            payload = payloadWrapperJson, cloudTasksIdHeader = generatedId!!,
+            cloudTasksRouteHeader = settings.taskRequest.workerRoute, userAgentHeader = TaskExecutor.USER_AGENT_HEADER_VALUE,
+            cloudTasksTimestampHeader = timestamp!!.toString(), cloudTasksVersionHeader = version!!.toString())
+
+        val signature = TaskSignature(signatureData, signatureStr!!)
+        assert(signatureHelper.getHandler().verify(signature))
     }
 }

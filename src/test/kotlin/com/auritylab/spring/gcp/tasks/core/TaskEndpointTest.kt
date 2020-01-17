@@ -6,7 +6,8 @@ import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksPayloadExc
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.config.endpoint.CloudTasksEndpointAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.endpoint.EnableCloudTasksWithEndpoint
-import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureData
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHelper
 import com.google.gson.Gson
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,6 +21,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 
 @EnableCloudTasksWithEndpoint
@@ -54,17 +57,14 @@ class TaskEndpointTest {
     @Test
     fun `Test TaskEndpoint with valid request`(
         @Autowired endpoint: TaskEndpoint,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
         val id = UUID.randomUUID()
         val payload = TestWorker.Payload("test")
-        val wrapper = PayloadWrapper(payload)
 
-        val signature = signatureHandler.sign(id)
+        val signatureData = createTestSignatureData(payload, id)
 
-        endpoint.workerEndpoint(Gson().toJson(wrapper),
-            "test-worker", id.toString(), "Google-Cloud-Tasks",
-            signature.timestamp.toString(), signature.version.toString(), signature.signature)
+        callWorkerEndpoint(endpoint, signatureHelper, signatureData)
 
         assert(resultTaskId == id)
         assert(resultPayload == payload)
@@ -76,18 +76,15 @@ class TaskEndpointTest {
     @Test
     fun `Test TaskEndpoint with invalid route on request`(
         @Autowired endpoint: TaskEndpoint,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
         val id = UUID.randomUUID()
         val payload = TestWorker.Payload("test")
-        val wrapper = PayloadWrapper(payload)
 
-        val signature = signatureHandler.sign(id)
+        val signatureData = createTestSignatureData(payload, id, workerRoute = "some-invalid-route")
 
         val exception = assertThrows<ResponseStatusException> {
-            endpoint.workerEndpoint(Gson().toJson(wrapper),
-                "test-worker-invalid", id.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature)
+            callWorkerEndpoint(endpoint, signatureHelper, signatureData)
         }
 
         assert(exception.status == HttpStatus.NOT_FOUND)
@@ -99,18 +96,15 @@ class TaskEndpointTest {
     @Test
     fun `Test TaskEndpoint with invalid user agent on request`(
         @Autowired endpoint: TaskEndpoint,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
         val id = UUID.randomUUID()
         val payload = TestWorker.Payload("test")
-        val wrapper = PayloadWrapper(payload)
 
-        val signature = signatureHandler.sign(id)
+        val signatureData = createTestSignatureData(payload, id, userAgent = "some-invalid-user-agent")
 
         val exception = assertThrows<ResponseStatusException> {
-            endpoint.workerEndpoint(Gson().toJson(wrapper),
-                "test-worker", id.toString(), "invalid-user-agent",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature)
+            callWorkerEndpoint(endpoint, signatureHelper, signatureData)
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)
@@ -122,19 +116,17 @@ class TaskEndpointTest {
     @Test
     fun `Test TaskEndpoint with invalid payload json on request`(
         @Autowired endpoint: TaskEndpoint,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
         val id = UUID.randomUUID()
         val payload = TestWorker.Payload("test")
 
-        val signature = signatureHandler.sign(id)
+        // Payload needs to be in wrapper to be valid, so we just create a
+        // json string of the payload without the wrapper
+        val signatureData = createTestSignatureData(payload, id, payload = Gson().toJson(payload))
 
-        // Payload has to be in wrapper, so we just use the payload itself,
-        // which leads to an invalid payload when parsing
-        assertThrows<InvalidCloudTasksPayloadException> {
-            endpoint.workerEndpoint(Gson().toJson(payload),
-                "test-worker", id.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature)
+        val exception = assertThrows<InvalidCloudTasksPayloadException> {
+            callWorkerEndpoint(endpoint, signatureHelper, signatureData)
         }
 
         resultTaskId = null
@@ -144,18 +136,19 @@ class TaskEndpointTest {
     @Test
     fun `Test TaskEndpoint with invalid timestamp on request`(
         @Autowired endpoint: TaskEndpoint,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
         val id = UUID.randomUUID()
         val payload = TestWorker.Payload("test")
-        val wrapper = PayloadWrapper(payload)
 
-        val signature = signatureHandler.sign(id)
+        val timestamp = (testTimestamp.toLong() - 1000).toString()
+        val signatureData = createTestSignatureData(payload, id)
+        val signature = signatureHelper.getHandler().sign(signatureData)
 
         val exception = assertThrows<ResponseStatusException> {
-            endpoint.workerEndpoint(Gson().toJson(wrapper),
-                "test-worker", id.toString(), "Google-Cloud-Tasks",
-                (signature.timestamp - 1000).toString(), signature.version.toString(), signature.signature)
+            endpoint.workerEndpoint(signatureData.payload + "-test",
+                signatureData.workerRoute, signatureData.taskId, signatureData.userAgent,
+                timestamp, signatureData.version, signature.signature)
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)
@@ -167,18 +160,19 @@ class TaskEndpointTest {
     @Test
     fun `Test TaskEndpoint with invalid version on request`(
         @Autowired endpoint: TaskEndpoint,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
         val id = UUID.randomUUID()
         val payload = TestWorker.Payload("test")
-        val wrapper = PayloadWrapper(payload)
 
-        val signature = signatureHandler.sign(id)
+        val version = (testVersion.toInt() - 1).toString()
+        val signatureData = createTestSignatureData(payload, id)
+        val signature = signatureHelper.getHandler().sign(signatureData)
 
         val exception = assertThrows<ResponseStatusException> {
-            endpoint.workerEndpoint(Gson().toJson(wrapper),
-                "test-worker", id.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), (signature.version - 5).toString(), signature.signature)
+            endpoint.workerEndpoint(signatureData.payload + "-test",
+                signatureData.workerRoute, signatureData.taskId, signatureData.userAgent,
+                signatureData.timestamp, version, signature.signature)
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)
@@ -190,25 +184,53 @@ class TaskEndpointTest {
     @Test
     fun `Test TaskEndpoint with invalid signature on request`(
         @Autowired endpoint: TaskEndpoint,
-        @Autowired signatureHandler: TaskSignatureHandler
+        @Autowired signatureHelper: TaskSignatureHelper
     ) {
-        val id1 = UUID.randomUUID()
-        val id2 = UUID.randomUUID()
-
+        val id = UUID.randomUUID()
         val payload = TestWorker.Payload("test")
-        val wrapper = PayloadWrapper(payload)
 
-        val signature = signatureHandler.sign(id2)
+        val signatureData = createTestSignatureData(payload, id)
+        val signature = signatureHelper.getHandler().sign(signatureData)
 
         val exception = assertThrows<ResponseStatusException> {
-            endpoint.workerEndpoint(Gson().toJson(wrapper),
-                "test-worker", id1.toString(), "Google-Cloud-Tasks",
-                signature.timestamp.toString(), signature.version.toString(), signature.signature)
+            endpoint.workerEndpoint(signatureData.payload,
+                signatureData.workerRoute, signatureData.taskId, signatureData.userAgent,
+                signatureData.timestamp, signatureData.version, signature.signature + "test")
         }
 
         assert(exception.status == HttpStatus.FORBIDDEN)
 
         resultTaskId = null
         resultPayload = null
+    }
+
+    private val testVersion = TaskSignatureHelper.CURRENT_VERSION.toString()
+    private val testTimestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toString()
+
+    private fun createTestSignatureData(
+        defaultPayload: TestWorker.Payload,
+        defaultTaskId: UUID,
+        payload: String? = null,
+        workerRoute: String? = null,
+        taskId: String? = null,
+        userAgent: String? = null,
+        timestamp: String? = null,
+        version: String? = null
+    ) = TaskSignatureData(
+        payload = payload ?: Gson().toJson(PayloadWrapper(defaultPayload)), workerRoute = workerRoute ?: "test-worker",
+        taskId = taskId ?: defaultTaskId.toString(), userAgent = userAgent ?: TaskExecutor.USER_AGENT_HEADER_VALUE,
+        timestamp = timestamp ?: testTimestamp, version = version ?: testVersion
+    )
+
+    private fun callWorkerEndpoint(
+        endpoint: TaskEndpoint,
+        signatureHelper: TaskSignatureHelper,
+        signatureData: TaskSignatureData
+    ) {
+        val signature = signatureHelper.getHandler().sign(signatureData)
+
+        endpoint.workerEndpoint(signatureData.payload,
+            signatureData.workerRoute, signatureData.taskId, signatureData.userAgent,
+            signatureData.timestamp, signatureData.version, signature.signature)
     }
 }
