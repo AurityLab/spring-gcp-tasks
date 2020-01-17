@@ -8,7 +8,7 @@ import java.util.UUID
 @Service
 class TaskSignatureHelper(private val handler: TaskSignatureHandler) {
     companion object {
-        private const val CURRENT_VERSION: Int = 1
+        const val CURRENT_VERSION: Int = 1
     }
 
     fun createNewSignatureData(
