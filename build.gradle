@@ -78,17 +78,12 @@ dependencyManagement {
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
-    }
     repositories {
         maven {
-            url "http://nexus.auritylab.com:8081/repository/maven-private/"
+            url "https://maven.pkg.github.com/AurityLab/spring-gcp-tasks"
             credentials {
-                username project.credentials.getProperty("auritylab.nexus.username").toString()
-                password project.credentials.getProperty("auritylab.nexus.password").toString()
+                username project.credentials.getProperty("auritylab.github.username").toString()
+                password project.credentials.getProperty("auritylab.github.password").toString()
             }
         }
     }
