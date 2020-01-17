@@ -125,7 +125,7 @@ class TaskEndpointTest {
         // json string of the payload without the wrapper
         val signatureData = createTestSignatureData(payload, id, payload = Gson().toJson(payload))
 
-        val exception = assertThrows<InvalidCloudTasksPayloadException> {
+        assertThrows<InvalidCloudTasksPayloadException> {
             callWorkerEndpoint(endpoint, signatureHelper, signatureData)
         }
 
