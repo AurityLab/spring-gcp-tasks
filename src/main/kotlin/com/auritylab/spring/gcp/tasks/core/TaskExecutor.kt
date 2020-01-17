@@ -1,7 +1,7 @@
 package com.auritylab.spring.gcp.tasks.core
 
 import com.auritylab.spring.gcp.tasks.api.TaskWorker
-import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHelper
 import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import com.google.cloud.tasks.v2beta3.CloudTasksClient
 import com.google.cloud.tasks.v2beta3.HttpMethod
@@ -18,7 +18,7 @@ import kotlin.collections.ArrayList
 @Component
 class TaskExecutor(
     private val properties: CloudTasksProperties,
-    private val signatureHandler: TaskSignatureHandler
+    private val signatureHelper: TaskSignatureHelper
 ) {
     companion object {
         /**
@@ -64,7 +64,13 @@ class TaskExecutor(
         val settings = worker.getSettings()
 
         val queue = settings.taskQueue.build(properties.queueIdGlobalPrefix)
-        val signature = signatureHandler.sign(uuid)
+
+        val signature = signatureHelper.createNewSignatureData(
+            payload, settings.taskRequest.workerRoute,
+            uuid, USER_AGENT_HEADER_VALUE
+        ).let {
+            signatureHelper.getHandler().sign(it)
+        }
 
         if (properties.skipTaskEndpoint)
             return executeDirectly(worker, payload, uuid)
@@ -78,8 +84,8 @@ class TaskExecutor(
                     .putHeaders(CLOUD_TASKS_ROUTE_HEADER, settings.taskRequest.workerRoute)
                     .putHeaders(CLOUD_TASKS_ID_HEADER, uuid.toString())
 
-                    .putHeaders(CLOUD_TASKS_TIMESTAMP_HEADER, signature.timestamp.toString())
-                    .putHeaders(CLOUD_TASKS_VERSION_HEADER, signature.version.toString())
+                    .putHeaders(CLOUD_TASKS_TIMESTAMP_HEADER, signature.data.timestamp)
+                    .putHeaders(CLOUD_TASKS_VERSION_HEADER, signature.data.version)
                     .putHeaders(CLOUD_TASKS_SIGNATURE_HEADER, signature.signature)
 
                     .setUrl("${settings.taskRequest.buildRequestUrl()}")

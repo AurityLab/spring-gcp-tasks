@@ -4,7 +4,7 @@ import com.auritylab.spring.gcp.tasks.config.CloudTasksLibraryAutoConfiguration
 import com.auritylab.spring.gcp.tasks.config.EnableCloudTasks
 import com.auritylab.spring.gcp.tasks.core.BeanExplorer
 import com.auritylab.spring.gcp.tasks.core.TaskEndpoint
-import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHelper
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -21,6 +21,6 @@ import org.springframework.context.annotation.Import
 class CloudTasksEndpointAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(TaskEndpoint::class)
-    fun taskEndpoint(explorer: BeanExplorer, signatureHandler: TaskSignatureHandler) =
-        TaskEndpoint(explorer, signatureHandler)
+    fun taskEndpoint(explorer: BeanExplorer, signatureHelper: TaskSignatureHelper) =
+        TaskEndpoint(explorer, signatureHelper)
 }

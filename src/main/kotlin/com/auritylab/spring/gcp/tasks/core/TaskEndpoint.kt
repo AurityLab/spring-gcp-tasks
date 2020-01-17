@@ -2,7 +2,7 @@ package com.auritylab.spring.gcp.tasks.core
 
 import com.auritylab.spring.gcp.tasks.api.TaskWorker
 import com.auritylab.spring.gcp.tasks.core.signature.TaskSignature
-import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHandler
+import com.auritylab.spring.gcp.tasks.core.signature.TaskSignatureHelper
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,7 +14,7 @@ import java.util.UUID
 @RestController
 class TaskEndpoint(
     private val explorer: BeanExplorer,
-    private val signatureHandler: TaskSignatureHandler
+    private val signatureHelper: TaskSignatureHelper
 ) {
 
     // Default: /tasks
@@ -32,18 +32,20 @@ class TaskEndpoint(
         // Transform data
         val uuid = UUID.fromString(uuidStr)
 
-        val timestamp = timestampStr.toLong()
-        val version = versionStr.toInt()
-
         // Check user agent header
         if (userAgent != TaskExecutor.USER_AGENT_HEADER_VALUE)
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")
 
-        // Create signature object from header data
-        val signature = TaskSignature(signatureStr, timestamp, version)
+        // Create signature data object from header data
+        val signatureData = signatureHelper.createFromRequestSignatureData(
+            payload = payload, cloudTasksIdHeader = uuidStr,
+            cloudTasksRouteHeader = route, userAgentHeader = userAgent,
+            cloudTasksTimestampHeader = timestampStr, cloudTasksVersionHeader = versionStr)
+
+        val signature = TaskSignature(signatureData, signatureStr)
 
         // Verify signature
-        if (!signatureHandler.verify(uuid, signature))
+        if (!signatureHelper.getHandler().verify(signature))
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")
 
         // Get worker
