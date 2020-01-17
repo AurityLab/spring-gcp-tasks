@@ -12,16 +12,22 @@ class TaskSignatureHelper(private val handler: TaskSignatureHandler) {
     }
 
     fun createNewSignatureData(
-        payload: String, route: String, id: UUID, userAgent: String
+        payload: String,
+        route: String,
+        id: UUID,
+        userAgent: String
     ) = TaskSignatureData(
         payload, route, id.toString(), userAgent,
         currentTimestamp().toString(), CURRENT_VERSION.toString()
     )
 
     fun createFromRequestSignatureData(
-        payload: String, cloudTasksRouteHeader: String,
-        cloudTasksIdHeader: String, userAgentHeader: String,
-        cloudTasksTimestampHeader: String, cloudTasksVersionHeader: String
+        payload: String,
+        cloudTasksRouteHeader: String,
+        cloudTasksIdHeader: String,
+        userAgentHeader: String,
+        cloudTasksTimestampHeader: String,
+        cloudTasksVersionHeader: String
     ) = TaskSignatureData(
         payload, cloudTasksRouteHeader, cloudTasksIdHeader,
         userAgentHeader, cloudTasksTimestampHeader, cloudTasksVersionHeader

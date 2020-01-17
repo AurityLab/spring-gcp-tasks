@@ -6,9 +6,13 @@ import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-data class TaskSignatureData(val payload: String, val workerRoute: String,
-    val taskId: String, val userAgent: String,
-    val timestamp: String, val version: String
+data class TaskSignatureData(
+    val payload: String,
+    val workerRoute: String,
+    val taskId: String,
+    val userAgent: String,
+    val timestamp: String,
+    val version: String
 )
 
 data class TaskSignature(val data: TaskSignatureData, val signature: String)
