@@ -8,10 +8,11 @@ import com.auritylab.spring.gcp.tasks.api.exceptions.InvalidCloudTasksPayloadExc
 import com.auritylab.spring.gcp.tasks.api.payload.PayloadWrapper
 import com.auritylab.spring.gcp.tasks.properties.CloudTasksProperties
 import com.auritylab.spring.gcp.tasks.core.TaskExecutor
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gcp.core.GcpProjectIdProvider
+import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
@@ -36,6 +37,7 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
     private lateinit var gcpProjectIdProvider: GcpProjectIdProvider
 
     private val gson = Gson()
+    private val jacksonMapper = jacksonObjectMapper()
 
     private val settingsLazy = lazy {
         TaskWorkerSettings(properties, gcpProjectIdProvider,
@@ -94,14 +96,13 @@ abstract class TaskWorker<T : Any>(private val payloadClass: KClass<T>) {
      */
     @Suppress("UNCHECKED_CAST")
     private fun runWorker(payload: String, id: UUID) {
-        val token = TypeToken.getParameterized(PayloadWrapper::class.java, payloadClass.java)
-        val wrapper = gson.getAdapter(token).fromJson(payload) as PayloadWrapper<T>
-
-        // Payload in wrapper is null if json is invalid
-        @Suppress("SENSELESS_COMPARISON")
-        if (wrapper.payload == null)
+        val wrapper = try {
+            jacksonMapper.readValue<PayloadWrapper<T>>(payload, jacksonMapper.typeFactory
+                .constructParametricType(PayloadWrapper::class.java, payloadClass.java))
+        } catch (e: IOException) {
             throw InvalidCloudTasksPayloadException("Task payload could not be deserialized to PayloadWrapper! " +
-                "Maybe invalid json?")
+                "Maybe invalid json?", e)
+        }
 
         // Run worker
         run(wrapper.payload, id)
