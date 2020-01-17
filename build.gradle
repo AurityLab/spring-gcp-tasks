@@ -18,7 +18,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "Greenwich.SR2")
+    set("springCloudVersion", "Greenwich.SR2")
 }
 
 configurations {
@@ -92,7 +92,7 @@ publishing {
 test {
     useJUnitPlatform()
 
-    dependsOn 'cleanTest'
+    dependsOn "cleanTest"
 
     testLogging {
         events "passed", "skipped", "failed"
