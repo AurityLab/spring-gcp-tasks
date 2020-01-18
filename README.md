@@ -16,10 +16,12 @@ Note: *This isn't heavily production tested yet, but the library is in a finishe
 
 ### Installation
 
+Repository: `https://maven.pkg.github.com/AurityLab/spring-gcp-tasks`
+
 Gradle:
 ```groovy
 dependencies {
-    implementation "com.auritylab:spring-gcp-tasks:0.1.11"
+    implementation "com.auritylab:spring-gcp-tasks:0.1.12"
 }
 ```
 
@@ -28,7 +30,7 @@ Maven:
 <dependency>
   <groupId>com.auritylab</groupId>
   <artifactId>spring-gcp-tasks</artifactId>
-  <version>0.1.11</version>
+  <version>0.1.12</version>
 </dependency>
 ```
 
