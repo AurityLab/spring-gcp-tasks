@@ -104,7 +104,7 @@ The latter is a *virtual* route to map the task to the right worker.
 There are two annotations for auto configuration:<br>
 `@EnableCloudTasks` and `@EnableCloudTasksWithEndpoint`
 
-The former enabled spring-gcp-tasks functionality, but disables the worker endpoint.
+The former enables spring-gcp-tasks functionality, but disables the worker endpoint.
 
 The latter also enables the worker endpoint via a rest controller mapped to the route specified
 in `com.auritylab.spring.gcp.tasks.default-worker-endpoint-route`. A configured web server is needed for this.
