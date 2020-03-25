@@ -21,7 +21,7 @@ Repository: `https://maven.pkg.github.com/AurityLab/spring-gcp-tasks`
 Gradle:
 ```groovy
 dependencies {
-    implementation "com.auritylab:spring-gcp-tasks:0.1.13"
+    implementation "com.auritylab:spring-gcp-tasks:0.1.14"
 }
 ```
 
@@ -30,7 +30,7 @@ Maven:
 <dependency>
   <groupId>com.auritylab</groupId>
   <artifactId>spring-gcp-tasks</artifactId>
-  <version>0.1.13</version>
+  <version>0.1.14</version>
 </dependency>
 ```
 

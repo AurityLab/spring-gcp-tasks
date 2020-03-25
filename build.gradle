@@ -10,7 +10,7 @@ plugins {
 }
 
 group "com.auritylab"
-version "0.1.13"
+version "0.1.14"
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
