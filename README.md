@@ -1,8 +1,8 @@
 # Spring GCP Cloud Tasks library
 
-Spring-gcp-tasks is a small library to integrate GCP Cloud Tasks into Spring projects.
+Spring-gcp-tasks is a small **experimental** library to integrate GCP Cloud Tasks into Spring projects.
 
-Note: *This isn't heavily production tested yet, but the library is in a finished state.*
+Note: *This isn't production tested, but the library is in a finished state.*
 
 ---
 
