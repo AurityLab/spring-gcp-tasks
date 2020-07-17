@@ -29,7 +29,7 @@ dependencies {
     // kotlin
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1"
 
     // spring
     implementation "org.springframework:spring-core:5.2.7.RELEASE"
