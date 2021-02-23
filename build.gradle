@@ -61,7 +61,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.1"
 
     // Mockito
-    testImplementation "org.mockito:mockito-core:3.4.6"
+    testImplementation "org.mockito:mockito-core:3.8.0"
 
     // Gson
     testImplementation "com.google.code.gson:gson:2.8.6"
