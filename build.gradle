@@ -43,7 +43,7 @@ dependencies {
     implementation "com.google.cloud:google-cloud-tasks"
 
     // ktlint
-    ktlint("com.pinterest:ktlint:0.36.0")
+    ktlint("com.pinterest:ktlint:0.41.0")
 
     // spring for tests
     testImplementation "org.springframework:spring-test:5.3.5"
