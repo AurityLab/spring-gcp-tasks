@@ -54,7 +54,7 @@ dependencies {
         exclude group: "tomcat-annotations-api", module: "org.apache.tomcat"
     }
     testImplementation "org.apache.tomcat.embed:tomcat-embed-el:10.0.5"
-    testImplementation "org.apache.tomcat.embed:tomcat-embed-websocket:10.0.4"
+    testImplementation "org.apache.tomcat.embed:tomcat-embed-websocket:10.0.5"
 
     // JUnit
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
