@@ -53,7 +53,7 @@ dependencies {
     testImplementation("org.apache.tomcat.embed:tomcat-embed-core:10.0.6") {
         exclude group: "tomcat-annotations-api", module: "org.apache.tomcat"
     }
-    testImplementation "org.apache.tomcat.embed:tomcat-embed-el:10.0.5"
+    testImplementation "org.apache.tomcat.embed:tomcat-embed-el:10.0.6"
     testImplementation "org.apache.tomcat.embed:tomcat-embed-websocket:10.0.5"
 
     // JUnit
