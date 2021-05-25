@@ -64,7 +64,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:3.4.6"
 
     // Gson
-    testImplementation "com.google.code.gson:gson:2.8.6"
+    testImplementation "com.google.code.gson:gson:2.8.7"
 }
 compileKotlin.dependsOn(processResources)
 compileJava.dependsOn(processResources)
