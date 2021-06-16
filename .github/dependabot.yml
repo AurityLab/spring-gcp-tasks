@@ -1,30 +1,30 @@
 version: 2
-updates:
-- package-ecosystem: gradle
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "04:00"
-  open-pull-requests-limit: 10
-  assignees:
-  - pneugebala
-  labels:
-  - dependencies
-  ignore:
-  - dependency-name: com.google.apis:google-api-services-cloudtasks
-    versions:
-    - "> v2beta3-rev19-1.25.0"
-  - dependency-name: org.apache.tomcat.embed:tomcat-embed-el
-    versions:
-    - 10.0.5
-  - dependency-name: org.jetbrains.kotlin.jvm
-    versions:
-    - 1.4.30
-    - 1.4.31
-    - 1.4.32
-  - dependency-name: com.pinterest:ktlint
-    versions:
-    - 0.41.0
-  - dependency-name: org.mockito:mockito-core
-    versions:
-    - 3.8.0
+# updates:
+# - package-ecosystem: gradle
+#   directory: "/"
+#   schedule:
+#     interval: daily
+#     time: "04:00"
+#   open-pull-requests-limit: 10
+#   assignees:
+#   - pneugebala
+#   labels:
+#   - dependencies
+#   ignore:
+#   - dependency-name: com.google.apis:google-api-services-cloudtasks
+#     versions:
+#     - "> v2beta3-rev19-1.25.0"
+#   - dependency-name: org.apache.tomcat.embed:tomcat-embed-el
+#     versions:
+#     - 10.0.5
+#   - dependency-name: org.jetbrains.kotlin.jvm
+#     versions:
+#     - 1.4.30
+#     - 1.4.31
+#     - 1.4.32
+#   - dependency-name: com.pinterest:ktlint
+#     versions:
+#     - 0.41.0
+#   - dependency-name: org.mockito:mockito-core
+#     versions:
+#     - 3.8.0
