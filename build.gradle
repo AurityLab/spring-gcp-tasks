@@ -32,7 +32,7 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3"
 
     // spring
-    implementation "org.springframework:spring-core:5.3.8"
+    implementation "org.springframework:spring-core:5.3.9"
     implementation "org.springframework:spring-web:5.3.8"
     kapt "org.springframework.boot:spring-boot-configuration-processor:2.5.0"
 
