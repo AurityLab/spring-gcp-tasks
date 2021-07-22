@@ -33,7 +33,7 @@ dependencies {
 
     // spring
     implementation "org.springframework:spring-core:5.3.9"
-    implementation "org.springframework:spring-web:5.3.8"
+    implementation "org.springframework:spring-web:5.3.9"
     kapt "org.springframework.boot:spring-boot-configuration-processor:2.5.1"
 
     // spring cloud
